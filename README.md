@@ -21,7 +21,31 @@ Hash tables are used to enable fast access to identifiers, strings and other con
 At first, clone or download this project. Afterwards, go to the terminal and type `mvn install` to create and install the related JAR file. To delete the created folder *target*, the command `mvn clean` must be executed. To execute the unit tests, there is the command `mvn test`.
 
 ## Usage
-Navigate to the folder *target* and type `java -jar *.jar` to execute the created JAR file. For example, to work with the project, it can be imported as a maven project into the IDE *IntelliJ*.
+Navigate to the folder *target* and type `java -jar *.jar` to execute the created JAR file. 
+
+For example, to work with the project, it can be imported as a maven project into the IDE *IntelliJ*. Let us assume, for example, that the example rule *test* is to be inserted.
+
+If the grammar is changed, the code must be adapted. To do this, the following commands must be executed after the change:
+
+```
+$ cd grammar
+$ antlr4 -package com.runekrauss.parser -o ../src/main/java/com/runekrauss/parser/ -no-listener -visitor E.g4
+```
+
+Now look into the class *EBaseVisitor* where you will find a method called *visitTest*:
+
+```
+public T visitTest(EParser.TestContext ctx) { return visitChildren(ctx); }`
+```
+
+This method must be overwritten in the class *EVisitor* with the respective actions to traverse the tree. To test the code, the array in the method *provideCodeExpectedOutput* of the class *CompilerTest* must be extended. To view the corresponding tree, you can use the TestRig tool as follows:
+
+```
+$ cd target
+$ java -cp classes:antlr-4.7.1-complete.jar org.antlr.v4.gui.TestRig com.runekrauss.parser.E program -gui ../test.e
+```
+
+Then, a graphical user interface opens which displays the tree.
 
 ## More information
 Generate the documentation of this project regarding the special comments with a command in your terminal, for example:

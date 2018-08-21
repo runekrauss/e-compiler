@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 /**
  * Represents a compiler for the language E:
- * EBNF ->(ANTLR4) Lexer/Parser ->(Code) Syntax tree ->(Visitor) Assembly ->(Jasmin) Bytecode ->(Java) Output
+ *  EBNF ->(ANTLR4) Lexer/Parser ->(Code) Syntax tree ->(Visitor) Assembly ->(Jasmin) Bytecode ->(Java) Output
  */
 public class Main {
 
@@ -36,10 +36,12 @@ public class Main {
      * @return Assembly program
      */
     public static String compile(CharStream sourceCode) {
+        // Control characters are ignored.
         ELexer lexer = new ELexer(sourceCode);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         EParser parser = new EParser(tokens);
-        ParseTree tree = parser.add();
+        // Start rule
+        ParseTree tree = parser.program();
         return createAssembly(new EVisitor().visit(tree));
     }
 
@@ -50,6 +52,12 @@ public class Main {
      * @return Assembler program
      */
     private static String createAssembly(String instructions) {
+        /**
+         * 1. E inherits from Object.
+         * 2. Create a method "main" without a return value.
+         * 3. Limit the stack and local variables to 100.
+         * 4. Get the instructions that work with the stack.
+         */
         return ".class public E\n" +
                 ".super java/lang/Object\n" +
                 "\n" +
@@ -57,9 +65,7 @@ public class Main {
                 "\t.limit stack 100\n" +
                 "\t.limit locals 100\n" +
                 "\t\n" +
-                "\tgetstatic java/lang/System/out Ljava/io/PrintStream;\n" +
                 instructions + "\n" +
-                "\tinvokevirtual java/io/PrintStream/println(I)V\n" +
                 "\treturn\n" +
                 "\n" +
                 ".end method";

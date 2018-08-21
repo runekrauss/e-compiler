@@ -1,6 +1,7 @@
 package com.runekrauss.compiler;
 
 import com.runekrauss.parser.EBaseVisitor;
+import com.runekrauss.parser.EParser.SayContext;
 import com.runekrauss.parser.EParser.AdditionContext;
 import com.runekrauss.parser.EParser.DigitContext;
 
@@ -9,7 +10,6 @@ import com.runekrauss.parser.EParser.DigitContext;
  * For this reason, the specific grammar is defined recursively.
  */
 public class EVisitor extends EBaseVisitor<String> {
-
     /**
      * Called when an addition is present. Here, the readability for the visitor was increased by using labels.
      * The left child is an addition, the right child is a digit.
@@ -20,6 +20,24 @@ public class EVisitor extends EBaseVisitor<String> {
     @Override
     public String visitAddition(AdditionContext ctx) {
         return visitChildren(ctx) + "\n" + "\tldc " + ctx.right.getText() + "\n" + "\tiadd";
+    }
+
+    /**
+     * Called if a "say" appears in the tree. The node is responsible for outputting text.
+     *
+     * @param ctx Say rule
+     * @return Code for the output
+     */
+    @Override
+    public String visitSay(SayContext ctx) {
+        /**
+         * 1. Push System.out to the stack.
+         * 2. Compute a series of instructions and get a value from this.
+         * 3. Output the value.
+         */
+        return "\tgetstatic java/lang/System/out Ljava/io/PrintStream;\n" +
+                visit(ctx.arg) + "\n" +
+                "\tinvokevirtual java/io/PrintStream/println(I)V\n";
     }
 
     /**

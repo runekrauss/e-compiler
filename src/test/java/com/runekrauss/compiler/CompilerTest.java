@@ -37,8 +37,11 @@ public class CompilerTest {
     @DataProvider
     public Object[][] provideCodeExpectedOutput() {
         return new Object[][] {
-                {"1+2", "3\n"},
-                {"1+2+50", "53\n"},
+                {"say(1+2);", "3" + System.lineSeparator()},
+                {"say(1+2+50);", "53" + System.lineSeparator()},
+                {"say(1); say(2);",
+                        "1" + System.lineSeparator() +
+                        "2" + System.lineSeparator()},
         };
     }
 

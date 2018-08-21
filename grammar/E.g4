@@ -1,8 +1,17 @@
 grammar E;
 
-add     : left=add '+' right=DIGIT #Addition
-        | digit=DIGIT #Digit
-        ;
+program     : (say ';')+
+            ;
 
-DIGIT   : [0-9]+
-        ;
+add         : left=add '+' right=DIGIT #Addition
+            | digit=DIGIT #Digit
+            ;
+
+say         : 'say(' arg=add ')'
+            ;
+
+DIGIT       : [0-9]+
+            ;
+
+WHITESPACE  : [ \t\n\r]+ -> skip
+            ;

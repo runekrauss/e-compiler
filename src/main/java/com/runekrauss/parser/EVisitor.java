@@ -11,6 +11,12 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by {@link EParser#program}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProgram(EParser.ProgramContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code Digit}
 	 * labeled alternative in {@link EParser#add}.
 	 * @param ctx the parse tree
@@ -24,4 +30,10 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAddition(EParser.AdditionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#say}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSay(EParser.SayContext ctx);
 }
