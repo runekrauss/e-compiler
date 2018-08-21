@@ -29,8 +29,11 @@ public class CompilerTest {
     }
 
     private void deleteRecursive(File file) {
-        if ( file.isDirectory() )
-            for ( File child : file.listFiles() ) deleteRecursive(child);
+        if ( file.isDirectory() ) {
+            File[] files = file.listFiles();
+            if (files != null)
+                for (File child : files) deleteRecursive(child);
+        }
         if ( !file.delete() ) throw new Error("Could not delete file: " + file);
     }
 

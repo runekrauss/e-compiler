@@ -10,6 +10,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 /**
  * Represents a compiler for the language E:
  *  EBNF ->(ANTLR4) Lexer/Parser ->(Code) Syntax tree ->(Visitor) Assembly ->(Jasmin) Bytecode ->(Java) Output
+ *
+ *  @author Rune Krauss
  */
 public class Main {
 
@@ -52,7 +54,7 @@ public class Main {
      * @return Assembler program
      */
     private static String createAssembly(String instructions) {
-        /**
+        /*
          * 1. E inherits from Object.
          * 2. Create a method "main" without a return value.
          * 3. Limit the stack and local variables to 100.
