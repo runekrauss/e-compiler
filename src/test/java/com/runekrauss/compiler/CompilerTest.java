@@ -39,6 +39,14 @@ public class CompilerTest {
         return new Object[][] {
                 {"say(1+2);", "3" + System.lineSeparator()},
                 {"say(1+2+50);", "53" + System.lineSeparator()},
+                {"say(5-3);", "2" + System.lineSeparator()},
+                {"say(2*5);", "10" + System.lineSeparator()},
+                {"say(9/3);", "3" + System.lineSeparator()},
+                {"say(10/3);", "3" + System.lineSeparator()},
+                {"say(12%5);", "2" + System.lineSeparator()},
+                {"say(15/5*3);", "9" + System.lineSeparator()},
+                {"say(9-1*3);", "6" + System.lineSeparator()},
+                {"say(3+5*2);", "13" + System.lineSeparator()},
                 {"say(1); say(2);",
                         "1" + System.lineSeparator() +
                         "2" + System.lineSeparator()},

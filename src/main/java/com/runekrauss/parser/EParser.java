@@ -17,18 +17,19 @@ public class EParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, DIGIT=5, WHITESPACE=6;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, DIGIT=9, 
+		WHITESPACE=10;
 	public static final int
-		RULE_program = 0, RULE_add = 1, RULE_say = 2;
+		RULE_program = 0, RULE_expression = 1, RULE_say = 2;
 	public static final String[] ruleNames = {
-		"program", "add", "say"
+		"program", "expression", "say"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "';'", "'+'", "'say('", "')'"
+		null, "';'", "'+'", "'-'", "'*'", "'/'", "'%'", "'say('", "')'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, "DIGIT", "WHITESPACE"
+		null, null, null, null, null, null, null, null, null, "DIGIT", "WHITESPACE"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -119,7 +120,7 @@ public class EParser extends Parser {
 				setState(11); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( _la==T__2 );
+			} while ( _la==T__6 );
 			}
 		}
 		catch (RecognitionException re) {
@@ -133,53 +134,109 @@ public class EParser extends Parser {
 		return _localctx;
 	}
 
-	public static class AddContext extends ParserRuleContext {
-		public AddContext(ParserRuleContext parent, int invokingState) {
+	public static class ExpressionContext extends ParserRuleContext {
+		public ExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_add; }
+		@Override public int getRuleIndex() { return RULE_expression; }
 	 
-		public AddContext() { }
-		public void copyFrom(AddContext ctx) {
+		public ExpressionContext() { }
+		public void copyFrom(ExpressionContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class DigitContext extends AddContext {
+	public static class DigitContext extends ExpressionContext {
 		public Token digit;
 		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
-		public DigitContext(AddContext ctx) { copyFrom(ctx); }
+		public DigitContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitDigit(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class AdditionContext extends AddContext {
-		public AddContext left;
+	public static class AdditionContext extends ExpressionContext {
+		public ExpressionContext left;
 		public Token right;
-		public AddContext add() {
-			return getRuleContext(AddContext.class,0);
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
 		}
 		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
-		public AdditionContext(AddContext ctx) { copyFrom(ctx); }
+		public AdditionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitAddition(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
-	public final AddContext add() throws RecognitionException {
-		return add(0);
+	public static class MultiplicationContext extends ExpressionContext {
+		public ExpressionContext left;
+		public Token right;
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public MultiplicationContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitMultiplication(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubtractionContext extends ExpressionContext {
+		public ExpressionContext left;
+		public Token right;
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public SubtractionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitSubtraction(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ModuloContext extends ExpressionContext {
+		public ExpressionContext left;
+		public Token right;
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public ModuloContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitModulo(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class DivisionContext extends ExpressionContext {
+		public ExpressionContext left;
+		public Token right;
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public DivisionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitDivision(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
-	private AddContext add(int _p) throws RecognitionException {
+	public final ExpressionContext expression() throws RecognitionException {
+		return expression(0);
+	}
+
+	private ExpressionContext expression(int _p) throws RecognitionException {
 		ParserRuleContext _parentctx = _ctx;
 		int _parentState = getState();
-		AddContext _localctx = new AddContext(_ctx, _parentState);
-		AddContext _prevctx = _localctx;
+		ExpressionContext _localctx = new ExpressionContext(_ctx, _parentState);
+		ExpressionContext _prevctx = _localctx;
 		int _startState = 2;
-		enterRecursionRule(_localctx, 2, RULE_add, _p);
+		enterRecursionRule(_localctx, 2, RULE_expression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
@@ -193,30 +250,88 @@ public class EParser extends Parser {
 			((DigitContext)_localctx).digit = match(DIGIT);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(21);
+			setState(33);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					{
-					_localctx = new AdditionContext(new AddContext(_parentctx, _parentState));
-					((AdditionContext)_localctx).left = _prevctx;
-					pushNewRecursionContext(_localctx, _startState, RULE_add);
-					setState(16);
-					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(17);
-					match(T__1);
-					setState(18);
-					((AdditionContext)_localctx).right = match(DIGIT);
+					setState(31);
+					_errHandler.sync(this);
+					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+					case 1:
+						{
+						_localctx = new AdditionContext(new ExpressionContext(_parentctx, _parentState));
+						((AdditionContext)_localctx).left = _prevctx;
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(16);
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						setState(17);
+						match(T__1);
+						setState(18);
+						((AdditionContext)_localctx).right = match(DIGIT);
+						}
+						break;
+					case 2:
+						{
+						_localctx = new SubtractionContext(new ExpressionContext(_parentctx, _parentState));
+						((SubtractionContext)_localctx).left = _prevctx;
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(19);
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						setState(20);
+						match(T__2);
+						setState(21);
+						((SubtractionContext)_localctx).right = match(DIGIT);
+						}
+						break;
+					case 3:
+						{
+						_localctx = new MultiplicationContext(new ExpressionContext(_parentctx, _parentState));
+						((MultiplicationContext)_localctx).left = _prevctx;
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(22);
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						setState(23);
+						match(T__3);
+						setState(24);
+						((MultiplicationContext)_localctx).right = match(DIGIT);
+						}
+						break;
+					case 4:
+						{
+						_localctx = new DivisionContext(new ExpressionContext(_parentctx, _parentState));
+						((DivisionContext)_localctx).left = _prevctx;
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(25);
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						setState(26);
+						match(T__4);
+						setState(27);
+						((DivisionContext)_localctx).right = match(DIGIT);
+						}
+						break;
+					case 5:
+						{
+						_localctx = new ModuloContext(new ExpressionContext(_parentctx, _parentState));
+						((ModuloContext)_localctx).left = _prevctx;
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(28);
+						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
+						setState(29);
+						match(T__5);
+						setState(30);
+						((ModuloContext)_localctx).right = match(DIGIT);
+						}
+						break;
 					}
 					} 
 				}
-				setState(23);
+				setState(35);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
 			}
 		}
@@ -232,9 +347,9 @@ public class EParser extends Parser {
 	}
 
 	public static class SayContext extends ParserRuleContext {
-		public AddContext arg;
-		public AddContext add() {
-			return getRuleContext(AddContext.class,0);
+		public ExpressionContext argument;
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
 		}
 		public SayContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -253,12 +368,12 @@ public class EParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(24);
-			match(T__2);
-			setState(25);
-			((SayContext)_localctx).arg = add(0);
-			setState(26);
-			match(T__3);
+			setState(36);
+			match(T__6);
+			setState(37);
+			((SayContext)_localctx).argument = expression(0);
+			setState(38);
+			match(T__7);
 			}
 		}
 		catch (RecognitionException re) {
@@ -275,28 +390,39 @@ public class EParser extends Parser {
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
 		case 1:
-			return add_sempred((AddContext)_localctx, predIndex);
+			return expression_sempred((ExpressionContext)_localctx, predIndex);
 		}
 		return true;
 	}
-	private boolean add_sempred(AddContext _localctx, int predIndex) {
+	private boolean expression_sempred(ExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
+			return precpred(_ctx, 6);
+		case 1:
+			return precpred(_ctx, 5);
+		case 2:
+			return precpred(_ctx, 4);
+		case 3:
+			return precpred(_ctx, 3);
+		case 4:
 			return precpred(_ctx, 2);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\b\37\4\2\t\2\4\3"+
-		"\t\3\4\4\t\4\3\2\3\2\3\2\6\2\f\n\2\r\2\16\2\r\3\3\3\3\3\3\3\3\3\3\3\3"+
-		"\7\3\26\n\3\f\3\16\3\31\13\3\3\4\3\4\3\4\3\4\3\4\2\3\4\5\2\4\6\2\2\2\35"+
-		"\2\13\3\2\2\2\4\17\3\2\2\2\6\32\3\2\2\2\b\t\5\6\4\2\t\n\7\3\2\2\n\f\3"+
-		"\2\2\2\13\b\3\2\2\2\f\r\3\2\2\2\r\13\3\2\2\2\r\16\3\2\2\2\16\3\3\2\2\2"+
-		"\17\20\b\3\1\2\20\21\7\7\2\2\21\27\3\2\2\2\22\23\f\4\2\2\23\24\7\4\2\2"+
-		"\24\26\7\7\2\2\25\22\3\2\2\2\26\31\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2"+
-		"\30\5\3\2\2\2\31\27\3\2\2\2\32\33\7\5\2\2\33\34\5\4\3\2\34\35\7\6\2\2"+
-		"\35\7\3\2\2\2\4\r\27";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\f+\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\3\2\3\2\3\2\6\2\f\n\2\r\2\16\2\r\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\7\3\"\n\3\f\3\16\3%\13"+
+		"\3\3\4\3\4\3\4\3\4\3\4\2\3\4\5\2\4\6\2\2\2-\2\13\3\2\2\2\4\17\3\2\2\2"+
+		"\6&\3\2\2\2\b\t\5\6\4\2\t\n\7\3\2\2\n\f\3\2\2\2\13\b\3\2\2\2\f\r\3\2\2"+
+		"\2\r\13\3\2\2\2\r\16\3\2\2\2\16\3\3\2\2\2\17\20\b\3\1\2\20\21\7\13\2\2"+
+		"\21#\3\2\2\2\22\23\f\b\2\2\23\24\7\4\2\2\24\"\7\13\2\2\25\26\f\7\2\2\26"+
+		"\27\7\5\2\2\27\"\7\13\2\2\30\31\f\6\2\2\31\32\7\6\2\2\32\"\7\13\2\2\33"+
+		"\34\f\5\2\2\34\35\7\7\2\2\35\"\7\13\2\2\36\37\f\4\2\2\37 \7\b\2\2 \"\7"+
+		"\13\2\2!\22\3\2\2\2!\25\3\2\2\2!\30\3\2\2\2!\33\3\2\2\2!\36\3\2\2\2\""+
+		"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$\5\3\2\2\2%#\3\2\2\2&\'\7\t\2\2\'(\5\4\3"+
+		"\2()\7\n\2\2)\7\3\2\2\2\5\r!#";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

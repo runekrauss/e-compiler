@@ -18,18 +18,46 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	T visitProgram(EParser.ProgramContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Digit}
-	 * labeled alternative in {@link EParser#add}.
+	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitDigit(EParser.DigitContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Addition}
-	 * labeled alternative in {@link EParser#add}.
+	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAddition(EParser.AdditionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Multiplication}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultiplication(EParser.MultiplicationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Subtraction}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubtraction(EParser.SubtractionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Modulo}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitModulo(EParser.ModuloContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Division}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDivision(EParser.DivisionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link EParser#say}.
 	 * @param ctx the parse tree

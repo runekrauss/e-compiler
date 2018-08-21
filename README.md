@@ -2,7 +2,7 @@ E Compiler
 ============
 
 # Description
-The *E compiler* is computer software that transforms computer code written in the source language *E* (see *test.e*) into an assembler program in the form of a symbolic notation of commands using [Jasmin](http://jasmin.sourceforge.net). The advantages are optimization and a lower overhead. *Jasmin* is an assembler to create class files from assembler-like syntax using the JVM instruction sets. Moreover, [ANTLR](http://jasmin.sourceforge.net) is used as parser generator for reading, processing, executing and translating the structured text. Therefore, it creates a lexer as well as parser for the grammar *grammar/E.g4*. The workflow works as follows:
+The *E compiler* is computer software that transforms computer code written in the source language *E* (see *test.e*) into an assembler program in the form of a symbolic notation of commands using [Jasmin](http://jasmin.sourceforge.net). The advantages are optimization and a lower overhead. *Jasmin* is an assembler to create class files from assembler-like syntax using the JVM instruction sets. Moreover, [ANTLR](http://jasmin.sourceforge.net) is used as parser generator for reading, processing, executing and translating the structured text. Therefore, it creates a lexer as well as parser for the grammar *grammar/E.g4*. Rules consisting only of majuscule refer to the lexer and rules consisting only of minuscules refer to the parser. The workflow works as follows:
 
 1. Lexical analysis: Recognizes words (lexeme) like digits or '+' from the source code with finite automatons (regular expressions). Each lexeme consists of at least one or more characters. Comments are ignored.
 2. Syntax analysis: Builds a logical structure (AST) using a top down parser. The grammar corresponds to LL(k) whereby k denotes the lookahead, that means the next production is predicted on the basis of tokens whereby the content of the PDA is taken into account. The PDA processes the input from left to right by calculating a left derivation.
@@ -46,6 +46,41 @@ $ java -cp classes:antlr-4.7.1-complete.jar org.antlr.v4.gui.TestRig com.runekra
 ```
 
 Then, a graphical user interface opens which displays the tree.
+
+## Example
+
+Let's assume the following code exists:
+
+```
+say(3+43+5);
+```
+
+The corresponding tree looks like this:
+
+![Parser Tree](img/parse_tree.png "Parser Tree")
+
+This produces over post order traverse the following assembler-like instructions:
+
+```
+.class public E
+.super java/lang/Object
+
+.method public static main([Ljava/lang/String;)V
+	.limit stack 100
+	.limit locals 100
+	
+	getstatic java/lang/System/out Ljava/io/PrintStream;
+	ldc 3
+	ldc 43
+	iadd
+	ldc 5
+	iadd
+	invokevirtual java/io/PrintStream/println(I)V
+
+	return
+
+.end method
+```
 
 ## More information
 Generate the documentation of this project regarding the special comments with a command in your terminal, for example:
