@@ -26,7 +26,7 @@ public class EParser extends Parser {
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "';'", "'+'", "'-'", "'*'", "'/'", "'%'", "'say('", "')'"
+		null, "';'", "'/'", "'*'", "'%'", "'+'", "'-'", "'say('", "')'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, null, null, null, null, null, null, null, null, "DIGIT", "WHITESPACE"
@@ -155,27 +155,15 @@ public class EParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class AdditionContext extends ExpressionContext {
-		public ExpressionContext left;
-		public Token right;
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
-		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
-		public AdditionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitAddition(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class MultiplicationContext extends ExpressionContext {
 		public ExpressionContext left;
-		public Token right;
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
+		public ExpressionContext right;
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
 		}
-		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
 		public MultiplicationContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -183,13 +171,31 @@ public class EParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class AdditionContext extends ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public AdditionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitAddition(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class SubtractionContext extends ExpressionContext {
 		public ExpressionContext left;
-		public Token right;
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
+		public ExpressionContext right;
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
 		}
-		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
 		public SubtractionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -199,11 +205,13 @@ public class EParser extends Parser {
 	}
 	public static class ModuloContext extends ExpressionContext {
 		public ExpressionContext left;
-		public Token right;
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
+		public ExpressionContext right;
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
 		}
-		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
 		public ModuloContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -213,11 +221,13 @@ public class EParser extends Parser {
 	}
 	public static class DivisionContext extends ExpressionContext {
 		public ExpressionContext left;
-		public Token right;
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
+		public ExpressionContext right;
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
 		}
-		public TerminalNode DIGIT() { return getToken(EParser.DIGIT, 0); }
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
 		public DivisionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -263,67 +273,67 @@ public class EParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 					case 1:
 						{
-						_localctx = new AdditionContext(new ExpressionContext(_parentctx, _parentState));
-						((AdditionContext)_localctx).left = _prevctx;
+						_localctx = new DivisionContext(new ExpressionContext(_parentctx, _parentState));
+						((DivisionContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(16);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(17);
 						match(T__1);
 						setState(18);
-						((AdditionContext)_localctx).right = match(DIGIT);
+						((DivisionContext)_localctx).right = expression(7);
 						}
 						break;
 					case 2:
 						{
-						_localctx = new SubtractionContext(new ExpressionContext(_parentctx, _parentState));
-						((SubtractionContext)_localctx).left = _prevctx;
+						_localctx = new MultiplicationContext(new ExpressionContext(_parentctx, _parentState));
+						((MultiplicationContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(19);
 						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(20);
 						match(T__2);
 						setState(21);
-						((SubtractionContext)_localctx).right = match(DIGIT);
+						((MultiplicationContext)_localctx).right = expression(6);
 						}
 						break;
 					case 3:
 						{
-						_localctx = new MultiplicationContext(new ExpressionContext(_parentctx, _parentState));
-						((MultiplicationContext)_localctx).left = _prevctx;
+						_localctx = new ModuloContext(new ExpressionContext(_parentctx, _parentState));
+						((ModuloContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(22);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(23);
 						match(T__3);
 						setState(24);
-						((MultiplicationContext)_localctx).right = match(DIGIT);
+						((ModuloContext)_localctx).right = expression(5);
 						}
 						break;
 					case 4:
 						{
-						_localctx = new DivisionContext(new ExpressionContext(_parentctx, _parentState));
-						((DivisionContext)_localctx).left = _prevctx;
+						_localctx = new AdditionContext(new ExpressionContext(_parentctx, _parentState));
+						((AdditionContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(25);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(26);
 						match(T__4);
 						setState(27);
-						((DivisionContext)_localctx).right = match(DIGIT);
+						((AdditionContext)_localctx).right = expression(4);
 						}
 						break;
 					case 5:
 						{
-						_localctx = new ModuloContext(new ExpressionContext(_parentctx, _parentState));
-						((ModuloContext)_localctx).left = _prevctx;
+						_localctx = new SubtractionContext(new ExpressionContext(_parentctx, _parentState));
+						((SubtractionContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(28);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 						setState(29);
 						match(T__5);
 						setState(30);
-						((ModuloContext)_localctx).right = match(DIGIT);
+						((SubtractionContext)_localctx).right = expression(3);
 						}
 						break;
 					}
@@ -417,12 +427,12 @@ public class EParser extends Parser {
 		"\3\3\4\3\4\3\4\3\4\3\4\2\3\4\5\2\4\6\2\2\2-\2\13\3\2\2\2\4\17\3\2\2\2"+
 		"\6&\3\2\2\2\b\t\5\6\4\2\t\n\7\3\2\2\n\f\3\2\2\2\13\b\3\2\2\2\f\r\3\2\2"+
 		"\2\r\13\3\2\2\2\r\16\3\2\2\2\16\3\3\2\2\2\17\20\b\3\1\2\20\21\7\13\2\2"+
-		"\21#\3\2\2\2\22\23\f\b\2\2\23\24\7\4\2\2\24\"\7\13\2\2\25\26\f\7\2\2\26"+
-		"\27\7\5\2\2\27\"\7\13\2\2\30\31\f\6\2\2\31\32\7\6\2\2\32\"\7\13\2\2\33"+
-		"\34\f\5\2\2\34\35\7\7\2\2\35\"\7\13\2\2\36\37\f\4\2\2\37 \7\b\2\2 \"\7"+
-		"\13\2\2!\22\3\2\2\2!\25\3\2\2\2!\30\3\2\2\2!\33\3\2\2\2!\36\3\2\2\2\""+
-		"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$\5\3\2\2\2%#\3\2\2\2&\'\7\t\2\2\'(\5\4\3"+
-		"\2()\7\n\2\2)\7\3\2\2\2\5\r!#";
+		"\21#\3\2\2\2\22\23\f\b\2\2\23\24\7\4\2\2\24\"\5\4\3\t\25\26\f\7\2\2\26"+
+		"\27\7\5\2\2\27\"\5\4\3\b\30\31\f\6\2\2\31\32\7\6\2\2\32\"\5\4\3\7\33\34"+
+		"\f\5\2\2\34\35\7\7\2\2\35\"\5\4\3\6\36\37\f\4\2\2\37 \7\b\2\2 \"\5\4\3"+
+		"\5!\22\3\2\2\2!\25\3\2\2\2!\30\3\2\2\2!\33\3\2\2\2!\36\3\2\2\2\"%\3\2"+
+		"\2\2#!\3\2\2\2#$\3\2\2\2$\5\3\2\2\2%#\3\2\2\2&\'\7\t\2\2\'(\5\4\3\2()"+
+		"\7\n\2\2)\7\3\2\2\2\5\r!#";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

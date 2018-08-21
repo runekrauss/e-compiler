@@ -15,36 +15,6 @@ import com.runekrauss.parser.EParser.DigitContext;
  */
 public class EVisitor extends EBaseVisitor<String> {
     /**
-     * Called when an addition is present. Here, the readability for the visitor was increased by using labels.
-     * The left child is the addition operator, the right child is a digit.
-     *
-     * @param ctx Addition rule
-     * @return Instructions
-     */
-    @Override
-    public String visitAddition(AdditionContext ctx) {
-        /**
-         * The operation iadd pops two integers from the operand stack, adds them, and pushes the integer result back
-         * onto the stack. On overflow, iadd produces a result whose low order bits are correct, but whose sign bit
-         * may be incorrect. The opcode is 0x60 (96).
-         */
-        return visitChildren(ctx) + "\n" + "\tldc " + ctx.right.getText() + "\n" + "\tiadd";
-    }
-
-    /**
-     * Called when an subtraction is present. The left child is the subtraction operator, the right child is a digit.
-     * The operation isub pops two ints off the operand stack, subtracts the top one from the second and pushes the
-     * int result back onto the stack. The opcode is 0x64 (100).
-     *
-     * @param ctx Subtraction rule
-     * @return Instructions
-     */
-    @Override
-    public String visitSubtraction(SubtractionContext ctx) {
-        return visitChildren(ctx) + "\n" + "\tldc " + ctx.right.getText() + "\n" + "\tisub";
-    }
-
-    /**
      * Called when an multiplication is present. The left child is the multiplication operator, the right child is a
      * digit. The operation imul pops the top two integers from the operand stack, multiplies them, and pushes the
      * integer result back onto the stack. On overflow, imul produces a result whose low order bits are correct, but
@@ -55,7 +25,7 @@ public class EVisitor extends EBaseVisitor<String> {
      */
     @Override
     public String visitMultiplication(MultiplicationContext ctx) {
-        return visitChildren(ctx) + "\n" + "\tldc " + ctx.right.getText() + "\n" + "\timul";
+        return visitChildren(ctx) + "\n\timul";
     }
 
     /**
@@ -69,7 +39,7 @@ public class EVisitor extends EBaseVisitor<String> {
      */
     @Override
     public String visitDivision(DivisionContext ctx) {
-        return visitChildren(ctx) + "\n" + "\tldc " + ctx.right.getText() + "\n" + "\tidiv";
+        return visitChildren(ctx) + "\n\tidiv";
     }
 
     /**
@@ -82,7 +52,37 @@ public class EVisitor extends EBaseVisitor<String> {
      */
     @Override
     public String visitModulo(ModuloContext ctx) {
-        return visitChildren(ctx) + "\n" + "\tldc " + ctx.right.getText() + "\n" + "\tirem";
+        return visitChildren(ctx) + "\n\tirem";
+    }
+
+    /**
+     * Called when an addition is present. Here, the readability for the visitor was increased by using labels.
+     * The left child is the addition operator, the right child is a digit.
+     *
+     * @param ctx Addition rule
+     * @return Instructions
+     */
+    @Override
+    public String visitAddition(AdditionContext ctx) {
+        /**
+         * The operation iadd pops two integers from the operand stack, adds them, and pushes the integer result back
+         * onto the stack. On overflow, iadd produces a result whose low order bits are correct, but whose sign bit
+         * may be incorrect. The opcode is 0x60 (96).
+         */
+        return visitChildren(ctx) + "\n\tiadd";
+    }
+
+    /**
+     * Called when an subtraction is present. The left child is the subtraction operator, the right child is a digit.
+     * The operation isub pops two ints off the operand stack, subtracts the top one from the second and pushes the
+     * int result back onto the stack. The opcode is 0x64 (100).
+     *
+     * @param ctx Subtraction rule
+     * @return Instructions
+     */
+    @Override
+    public String visitSubtraction(SubtractionContext ctx) {
+        return visitChildren(ctx) + "\n\tisub";
     }
 
     /**

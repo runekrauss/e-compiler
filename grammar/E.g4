@@ -2,18 +2,20 @@ grammar E;
 
 // ------------------------------------------------------------
 // Start rule
+// It is evaluated from right to left
 
 program     : (say ';')+
             ;
 
 // ------------------------------------------------------------
 // Mathematical operators
+// Precedence: div (commutative), mul, rem, add, sub
 
-expression  : left=expression '+' right=DIGIT #Addition
-            | left=expression '-' right=DIGIT #Subtraction
-            | left=expression '*' right=DIGIT #Multiplication
-            | left=expression '/' right=DIGIT #Division
-            | left=expression '%' right=DIGIT #Modulo
+expression  : left=expression '/' right=expression #Division
+            | left=expression '*' right=expression #Multiplication
+            | left=expression '%' right=expression #Modulo
+            | left=expression '+' right=expression #Addition
+            | left=expression '-' right=expression #Subtraction
             | digit=DIGIT #Digit
             ;
 

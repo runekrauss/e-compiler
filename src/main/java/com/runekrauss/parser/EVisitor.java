@@ -24,19 +24,19 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDigit(EParser.DigitContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Addition}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAddition(EParser.AdditionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code Multiplication}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMultiplication(EParser.MultiplicationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Addition}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddition(EParser.AdditionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Subtraction}
 	 * labeled alternative in {@link EParser#expression}.
