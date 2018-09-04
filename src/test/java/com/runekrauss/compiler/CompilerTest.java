@@ -48,11 +48,18 @@ public class CompilerTest {
                 {"say(10/3);", "3" + System.lineSeparator()},
                 {"say(12%5);", "2" + System.lineSeparator()},
                 {"say(15/5*3);", "9" + System.lineSeparator()},
+                {"say(3-2+5);", "6" + System.lineSeparator()},
+                {"say(3+2-5);", "0" + System.lineSeparator()},
                 {"say(9-1*3);", "6" + System.lineSeparator()},
                 {"say(3+5*2);", "13" + System.lineSeparator()},
                 {"say(1); say(2);",
                         "1" + System.lineSeparator() +
                         "2" + System.lineSeparator()},
+                {"int a; a = 5; say(a);", "5" + System.lineSeparator()},
+                {"int _a; _a = 5; say(_a);", "5" + System.lineSeparator()},
+                {"int _a = 5; say(_a);", "5" + System.lineSeparator()},
+                {"int a; a = 5; say(a+3);", "8" + System.lineSeparator()},
+                {"int a; a = 5; int b; b = 3; say(a+b);", "8" + System.lineSeparator()},
         };
     }
 

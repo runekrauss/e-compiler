@@ -66,7 +66,6 @@ public class Main {
                 ".method public static main([Ljava/lang/String;)V\n" +
                 "\t.limit stack 100\n" +
                 "\t.limit locals 100\n" +
-                "\t\n" +
                 instructions + "\n" +
                 "\treturn\n" +
                 "\n" +

@@ -17,6 +17,12 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(EParser.ProgramContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link EParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatement(EParser.StatementContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code Digit}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
@@ -37,6 +43,13 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAddition(EParser.AdditionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Variable}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariable(EParser.VariableContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Subtraction}
 	 * labeled alternative in {@link EParser#expression}.
@@ -64,4 +77,16 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSay(EParser.SayContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#variableDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableDeclaration(EParser.VariableDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignment(EParser.AssignmentContext ctx);
 }
