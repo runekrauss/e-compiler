@@ -72,11 +72,11 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDivision(EParser.DivisionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link EParser#say}.
+	 * Visit a parse tree produced by {@link EParser#print}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSay(EParser.SayContext ctx);
+	T visitPrint(EParser.PrintContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link EParser#variableDeclaration}.
 	 * @param ctx the parse tree

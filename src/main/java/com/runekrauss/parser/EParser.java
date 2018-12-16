@@ -20,14 +20,15 @@ public class EParser extends Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
 		TYPE=10, IDENTIFIER=11, INT=12, DIGIT=13, LETTER=14, WHITESPACE=15;
 	public static final int
-		RULE_program = 0, RULE_statement = 1, RULE_expression = 2, RULE_say = 3, 
+		RULE_program = 0, RULE_statement = 1, RULE_expression = 2, RULE_print = 3, 
 		RULE_variableDeclaration = 4, RULE_assignment = 5;
 	public static final String[] ruleNames = {
-		"program", "statement", "expression", "say", "variableDeclaration", "assignment"
+		"program", "statement", "expression", "print", "variableDeclaration", 
+		"assignment"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "';'", "'/'", "'*'", "'%'", "'-'", "'+'", "'say('", "')'", "'='", 
+		null, "';'", "'/'", "'*'", "'%'", "'-'", "'+'", "'print('", "')'", "'='", 
 		"'int'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
@@ -138,8 +139,8 @@ public class EParser extends Parser {
 	}
 
 	public static class StatementContext extends ParserRuleContext {
-		public SayContext say() {
-			return getRuleContext(SayContext.class,0);
+		public PrintContext print() {
+			return getRuleContext(PrintContext.class,0);
 		}
 		public VariableDeclarationContext variableDeclaration() {
 			return getRuleContext(VariableDeclarationContext.class,0);
@@ -169,7 +170,7 @@ public class EParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(19);
-				say();
+				print();
 				}
 				break;
 			case TYPE:
@@ -223,8 +224,6 @@ public class EParser extends Parser {
 		}
 	}
 	public static class MultiplicationContext extends ExpressionContext {
-		public ExpressionContext left;
-		public ExpressionContext right;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -239,8 +238,6 @@ public class EParser extends Parser {
 		}
 	}
 	public static class AdditionContext extends ExpressionContext {
-		public ExpressionContext left;
-		public ExpressionContext right;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -255,7 +252,7 @@ public class EParser extends Parser {
 		}
 	}
 	public static class VariableContext extends ExpressionContext {
-		public Token identifier;
+		public Token var;
 		public TerminalNode IDENTIFIER() { return getToken(EParser.IDENTIFIER, 0); }
 		public VariableContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
@@ -265,8 +262,6 @@ public class EParser extends Parser {
 		}
 	}
 	public static class SubtractionContext extends ExpressionContext {
-		public ExpressionContext left;
-		public ExpressionContext right;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -281,8 +276,6 @@ public class EParser extends Parser {
 		}
 	}
 	public static class ModuloContext extends ExpressionContext {
-		public ExpressionContext left;
-		public ExpressionContext right;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -297,8 +290,6 @@ public class EParser extends Parser {
 		}
 	}
 	public static class DivisionContext extends ExpressionContext {
-		public ExpressionContext left;
-		public ExpressionContext right;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -347,7 +338,7 @@ public class EParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(26);
-				((VariableContext)_localctx).identifier = match(IDENTIFIER);
+				((VariableContext)_localctx).var = match(IDENTIFIER);
 				}
 				break;
 			default:
@@ -368,66 +359,61 @@ public class EParser extends Parser {
 					case 1:
 						{
 						_localctx = new DivisionContext(new ExpressionContext(_parentctx, _parentState));
-						((DivisionContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(29);
 						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(30);
 						match(T__1);
 						setState(31);
-						((DivisionContext)_localctx).right = expression(8);
+						expression(8);
 						}
 						break;
 					case 2:
 						{
 						_localctx = new MultiplicationContext(new ExpressionContext(_parentctx, _parentState));
-						((MultiplicationContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(32);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(33);
 						match(T__2);
 						setState(34);
-						((MultiplicationContext)_localctx).right = expression(7);
+						expression(7);
 						}
 						break;
 					case 3:
 						{
 						_localctx = new ModuloContext(new ExpressionContext(_parentctx, _parentState));
-						((ModuloContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(35);
 						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(36);
 						match(T__3);
 						setState(37);
-						((ModuloContext)_localctx).right = expression(6);
+						expression(6);
 						}
 						break;
 					case 4:
 						{
 						_localctx = new SubtractionContext(new ExpressionContext(_parentctx, _parentState));
-						((SubtractionContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(38);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(39);
 						match(T__4);
 						setState(40);
-						((SubtractionContext)_localctx).right = expression(5);
+						expression(5);
 						}
 						break;
 					case 5:
 						{
 						_localctx = new AdditionContext(new ExpressionContext(_parentctx, _parentState));
-						((AdditionContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(41);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(42);
 						match(T__5);
 						setState(43);
-						((AdditionContext)_localctx).right = expression(4);
+						expression(4);
 						}
 						break;
 					}
@@ -450,32 +436,32 @@ public class EParser extends Parser {
 		return _localctx;
 	}
 
-	public static class SayContext extends ParserRuleContext {
-		public ExpressionContext argument;
+	public static class PrintContext extends ParserRuleContext {
+		public ExpressionContext arg;
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public SayContext(ParserRuleContext parent, int invokingState) {
+		public PrintContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_say; }
+		@Override public int getRuleIndex() { return RULE_print; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitSay(this);
+			if ( visitor instanceof EVisitor ) return ((EVisitor<? extends T>)visitor).visitPrint(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final SayContext say() throws RecognitionException {
-		SayContext _localctx = new SayContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_say);
+	public final PrintContext print() throws RecognitionException {
+		PrintContext _localctx = new PrintContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_print);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(49);
 			match(T__6);
 			setState(50);
-			((SayContext)_localctx).argument = expression(0);
+			((PrintContext)_localctx).arg = expression(0);
 			setState(51);
 			match(T__7);
 			}
@@ -492,7 +478,7 @@ public class EParser extends Parser {
 	}
 
 	public static class VariableDeclarationContext extends ParserRuleContext {
-		public Token identifier;
+		public Token var;
 		public TerminalNode TYPE() { return getToken(EParser.TYPE, 0); }
 		public TerminalNode IDENTIFIER() { return getToken(EParser.IDENTIFIER, 0); }
 		public VariableDeclarationContext(ParserRuleContext parent, int invokingState) {
@@ -515,7 +501,7 @@ public class EParser extends Parser {
 			setState(53);
 			match(TYPE);
 			setState(54);
-			((VariableDeclarationContext)_localctx).identifier = match(IDENTIFIER);
+			((VariableDeclarationContext)_localctx).var = match(IDENTIFIER);
 			}
 		}
 		catch (RecognitionException re) {
@@ -530,7 +516,7 @@ public class EParser extends Parser {
 	}
 
 	public static class AssignmentContext extends ParserRuleContext {
-		public Token identifier;
+		public Token var;
 		public ExpressionContext expr;
 		public TerminalNode IDENTIFIER() { return getToken(EParser.IDENTIFIER, 0); }
 		public ExpressionContext expression() {
@@ -554,7 +540,7 @@ public class EParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(56);
-			((AssignmentContext)_localctx).identifier = match(IDENTIFIER);
+			((AssignmentContext)_localctx).var = match(IDENTIFIER);
 			setState(57);
 			match(T__8);
 			setState(58);

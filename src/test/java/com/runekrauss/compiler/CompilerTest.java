@@ -1,5 +1,7 @@
 package com.runekrauss.compiler;
 
+import com.runekrauss.compiler.exception.AlreadyDefinedVariableException;
+import com.runekrauss.compiler.exception.UndeclaredVariableException;
 import jasmin.ClassFile;
 import org.antlr.v4.runtime.CharStreams;
 import org.testng.Assert;
@@ -10,6 +12,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,33 +43,45 @@ public class CompilerTest {
     @DataProvider
     public Object[][] provideCodeExpectedOutput() {
         return new Object[][] {
-                {"say(1+2);", "3" + System.lineSeparator()},
-                {"say(1+2+50);", "53" + System.lineSeparator()},
-                {"say(5-3);", "2" + System.lineSeparator()},
-                {"say(2*5);", "10" + System.lineSeparator()},
-                {"say(9/3);", "3" + System.lineSeparator()},
-                {"say(10/3);", "3" + System.lineSeparator()},
-                {"say(12%5);", "2" + System.lineSeparator()},
-                {"say(15/5*3);", "9" + System.lineSeparator()},
-                {"say(3-2+5);", "6" + System.lineSeparator()},
-                {"say(3+2-5);", "0" + System.lineSeparator()},
-                {"say(9-1*3);", "6" + System.lineSeparator()},
-                {"say(3+5*2);", "13" + System.lineSeparator()},
-                {"say(1); say(2);",
-                        "1" + System.lineSeparator() +
-                        "2" + System.lineSeparator()},
-                {"int a; a = 5; say(a);", "5" + System.lineSeparator()},
-                {"int _a; _a = 5; say(_a);", "5" + System.lineSeparator()},
-                {"int _a = 5; say(_a);", "5" + System.lineSeparator()},
-                {"int a; a = 5; say(a+3);", "8" + System.lineSeparator()},
-                {"int a; a = 5; int b; b = 3; say(a+b);", "8" + System.lineSeparator()},
+                {"print(1+2);", "3" + System.lineSeparator()},
+                {"print(1+2+50);", "53" + System.lineSeparator()},
+                {"print(5-3);", "2" + System.lineSeparator()},
+                {"print(2*5);", "10" + System.lineSeparator()},
+                {"print(9/3);", "3" + System.lineSeparator()},
+                {"print(10/3);", "3" + System.lineSeparator()},
+                {"print(12%5);", "2" + System.lineSeparator()},
+                {"print(15/5*3);", "9" + System.lineSeparator()},
+                {"print(3-2+5);", "6" + System.lineSeparator()},
+                {"print(3+2-5);", "0" + System.lineSeparator()},
+                {"print(9-1*3);", "6" + System.lineSeparator()},
+                {"print(3+5*2);", "13" + System.lineSeparator()},
+                {"print(1); print(2);", "1" + System.lineSeparator() + "2" + System.lineSeparator()},
+                {"int a; a = 5; print(a);", "5" + System.lineSeparator()},
+                {"int _a; _a = 5; print(_a);", "5" + System.lineSeparator()},
+                {"int a; a = 5; print(a+3);", "8" + System.lineSeparator()},
+                {"int a; a = 5; int b; b = 3; print(a+b);", "8" + System.lineSeparator()},
         };
     }
 
     @Test(dataProvider = "provideCodeExpectedOutput")
-    public void testOutputs(String sourceCode, String expectedOutput) throws Exception {
+    public void testCodeExecution(String sourceCode, String expectedOutput) throws Exception {
         String currentOutput = compileAndRun(sourceCode);
         Assert.assertEquals(currentOutput, expectedOutput);
+    }
+
+    @Test(expectedExceptions = UndeclaredVariableException.class, expectedExceptionsMessageRegExp = "1:6 Undeclared variable: <a>")
+    public void testReadingUndeclaredVariable() throws Exception {
+        compileAndRun("print(a);");
+    }
+
+    @Test(expectedExceptions = UndeclaredVariableException.class, expectedExceptionsMessageRegExp = "1:0 Undeclared variable: <a>")
+    public void testWritingUndeclaredVariable() throws Exception {
+        compileAndRun("a = 9;");
+    }
+
+    @Test(expectedExceptions = AlreadyDefinedVariableException.class, expectedExceptionsMessageRegExp = "2:4 Already defined variable: <a>")
+    public void testWritingAlreadyDefinedVariable() throws Exception {
+        compileAndRun("int a;" + System.lineSeparator() + "int a;");
     }
 
     private String compileAndRun(String sourceCode) throws Exception {
@@ -74,7 +89,9 @@ public class CompilerTest {
         ClassFile classFile = new ClassFile();
         classFile.readJasmin(new StringReader(sourceCode), "", false);
         Path outputPath = tempDir.resolve(classFile.getClassName() + ".class");
-        classFile.write( Files.newOutputStream(outputPath) );
+        try ( OutputStream output = Files.newOutputStream(outputPath) ) {
+            classFile.write(output);
+        }
         return runClass(tempDir, classFile.getClassName());
     }
 

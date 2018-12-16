@@ -42,7 +42,7 @@ This method must be overwritten in the class *EVisitor* with the respective acti
 
 ```
 $ cd target
-$ java -cp classes:antlr-4.7.1-complete.jar org.antlr.v4.gui.TestRig com.runekrauss.parser.E program -gui ../test.e
+$ java -cp classes:../lib/antlr.jar org.antlr.v4.gui.TestRig com.runekrauss.parser.E program -gui ../test.e
 ```
 
 Then, a graphical user interface opens which displays the tree.
@@ -52,10 +52,10 @@ Then, a graphical user interface opens which displays the tree.
 Let's assume the following code exists:
 
 ```
-say(3+43+5);
+print(3+2*4);
 ```
 
-The corresponding tree looks like this:
+Here, for example, a digit or ';' is a lexeme. The corresponding tree looks like this:
 
 ![Parser Tree](img/parse_tree.png "Parser Tree")
 
@@ -68,12 +68,11 @@ This produces over post order traverse the following assembler-like instructions
 .method public static main([Ljava/lang/String;)V
 	.limit stack 100
 	.limit locals 100
-	
 	getstatic java/lang/System/out Ljava/io/PrintStream;
 	ldc 3
-	ldc 43
-	iadd
-	ldc 5
+	ldc 2
+	ldc 4
+	imul
 	iadd
 	invokevirtual java/io/PrintStream/println(I)V
 
@@ -81,6 +80,8 @@ This produces over post order traverse the following assembler-like instructions
 
 .end method
 ```
+
+Finally, the code can be translated into a class file using *Jasmin*. Then, it can be interpreted and executed in the *JVM*.
 
 ## More information
 Generate the documentation of this project regarding the special comments with a command in your terminal, for example:

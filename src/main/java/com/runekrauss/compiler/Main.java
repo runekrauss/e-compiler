@@ -29,9 +29,9 @@ public class Main {
     /**
      * Compiles the source code as follows:
      *  1. Lexical analysis: Recognizes words (lexeme) with finite automatons (regular expressions)
-     *  2. Syntax analysis: Builds a logical structure (AST) using a top down parser
+     *  2. Syntax analysis: Builds a logical structure (AST) using a LL(1) top down parser
      *  3. Context analysis: Attributes the AST through declaration analysis and type analysis (ASG)
-     *  4. Synthesis: Creates assembler instructions
+     *  4. Synthesis: Creates assembler instructions regarding Jasmin
      *  In addition, an optimization is carried out, such as a simplification of isomorphisms.
      *
      * @param sourceCode Source code

@@ -12,40 +12,40 @@ program             : (statement ';')+
 // ------------------------------------------------------------------------
 // Statements in the program code
 
-statement           : say
+statement           : print
                     | variableDeclaration
                     | assignment
                     ;
 
 // ------------------------------------------------------------------------
 // Mathematical operators
-// Precedence: div (commutative), mul, rem, add, sub
+// Precedence: div, mul (commutative), rem, sub, add
 // Labels allow access in the code.
 
-expression          : left=expression '/' right=expression #Division
-                    | left=expression '*' right=expression #Multiplication
-                    | left=expression '%' right=expression #Modulo
-                    | left=expression '-' right=expression #Subtraction
-                    | left=expression '+' right=expression #Addition
+expression          : expression '/' expression #Division
+                    | expression '*' expression #Multiplication
+                    | expression '%' expression #Modulo
+                    | expression '-' expression #Subtraction
+                    | expression '+' expression #Addition
                     | digit=INT #Digit
-                    | identifier=IDENTIFIER #Variable
+                    | var=IDENTIFIER #Variable
                     ;
 
 // ------------------------------------------------------------------------
 // Responsible for outputs
 
-say                 : 'say(' argument=expression ')'
+print               : 'print(' arg=expression ')'
                     ;
 
 // ------------------------------------------------------------------------
 // Allowed declaration of variables
 
-variableDeclaration : TYPE identifier=IDENTIFIER
+variableDeclaration : TYPE var=IDENTIFIER
                     ;
 
 // ------------------------------------------------------------------------
 // Assigning values to a variable
-assignment          : identifier=IDENTIFIER '=' expr=expression
+assignment          : var=IDENTIFIER '=' expr=expression
                     ;
 
 

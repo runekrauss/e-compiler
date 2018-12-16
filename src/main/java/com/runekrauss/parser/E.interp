@@ -6,7 +6,7 @@ null
 '%'
 '-'
 '+'
-'say('
+'print('
 ')'
 '='
 'int'
@@ -38,7 +38,7 @@ rule names:
 program
 statement
 expression
-say
+print
 variableDeclaration
 assignment
 
