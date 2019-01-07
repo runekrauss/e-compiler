@@ -3,6 +3,8 @@ package com.runekrauss.compiler;
 import com.runekrauss.compiler.exception.AlreadyDefinedVariableException;
 import com.runekrauss.compiler.exception.UndeclaredVariableException;
 import com.runekrauss.parser.EBaseVisitor;
+import com.runekrauss.parser.EParser.ProgramContext;
+import com.runekrauss.parser.EParser.MainStatementContext;
 import com.runekrauss.parser.EParser.DivisionContext;
 import com.runekrauss.parser.EParser.MultiplicationContext;
 import com.runekrauss.parser.EParser.ModuloContext;
@@ -13,7 +15,10 @@ import com.runekrauss.parser.EParser.VariableDeclarationContext;
 import com.runekrauss.parser.EParser.AssignmentContext;
 import com.runekrauss.parser.EParser.VariableContext;
 import com.runekrauss.parser.EParser.DigitContext;
+import com.runekrauss.parser.EParser.FunctionCallContext;
+import com.runekrauss.parser.EParser.FunctionDefinitionContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +35,34 @@ public class EVisitor extends EBaseVisitor<String> {
      * table.
      */
     private Map<String, Integer> variables = new HashMap<>();
+
+    /**
+     * The program has several children, namely once functions and statements. The respective code is determined
+     * separately in an iteration and then returned concatenated.
+     *
+     * @param context Program rule
+     * @return Instructions for the statements and functions (outside the main method)
+     */
+    @Override
+    public String visitProgram(ProgramContext context) {
+        StringBuilder statements = new StringBuilder();
+        StringBuilder functions = new StringBuilder();
+        for (int i = 0; i < context.getChildCount(); ++i) {
+            ParseTree child = context.getChild(i);
+            String instructions = visit(child);
+            if (child instanceof MainStatementContext)
+                statements.append(instructions + "\n");
+            else
+                functions.append(instructions + "\n");
+        }
+        return "\n" + functions.toString() + "\n" +
+                ".method public static main([Ljava/lang/String;)V\n" +
+                "\t.limit stack 100\n" +
+                "\t.limit locals 100\n" +
+                statements.toString() +
+                "\treturn\n" +
+                ".end method";
+    }
 
     /**
      * Called when an multiplication is present. The left child is the multiplication operator, the right child is a
@@ -114,7 +147,7 @@ public class EVisitor extends EBaseVisitor<String> {
          */
         return "\tgetstatic java/lang/System/out Ljava/io/PrintStream;\n" +
                 visit(context.arg) + "\n" +
-                "\tinvokevirtual java/io/PrintStream/println(I)V\n";
+                "\tinvokevirtual java/io/PrintStream/println(I)V";
     }
 
     /**
@@ -127,34 +160,34 @@ public class EVisitor extends EBaseVisitor<String> {
      */
     @Override
     public String visitVariableDeclaration(VariableDeclarationContext context) {
-        if (variables.containsKey(context.var.getText()))
-            throw new AlreadyDefinedVariableException(context.var);
-        variables.put(context.var.getText(), variables.size());
+        if (variables.containsKey(context.varId.getText()))
+            throw new AlreadyDefinedVariableException(context.varId);
+        variables.put(context.varId.getText(), variables.size());
         return "";
     }
 
     /**
      * Called if an assignment appears in the tree. The command "istore" gets the topmost int from the stack and places
      * it in the table regarding the variables. For example, the command "istore 5" places the specific value at
-     * position 5 in this table.
+     * position 5 in this table. The opcode is 0x36 (54).
      *
      * @param context Rule for the assignment
      * @return Instruction regarding the value at position context.identifier.getText() in the variables table
      */
     @Override
     public String visitAssignment(AssignmentContext context) {
-        return visit(context.expr) + "\n" + "\tistore " + getVarIndexById(context.var);
+        return visit(context.expr) + "\n" + "\tistore " + getVarIndexById(context.varId);
     }
 
     /**
-     * Does the opposite of {@link #visitAssignment}.
+     * Does the opposite of {@link #visitAssignment}. The opcode is 0x15 (21).
      *
      * @param context Variables rule
      * @return Instruction with regard to loading a value from the table at position identifier.getText() onto the stack
      */
     @Override
     public String visitVariable(VariableContext context) {
-        return "\tiload " + getVarIndexById(context.var);
+        return "\tiload " + getVarIndexById(context.varId);
     }
 
     /**
@@ -172,14 +205,83 @@ public class EVisitor extends EBaseVisitor<String> {
     }
 
     /**
-     * Called when an digit is present.
+     * Called when an digit is present. The opcode is 0x12 (18).
      *
      * @param context DIGIT rule
-     * @return Instructions
+     * @return Instruction for a digit
      */
     @Override
     public String visitDigit(DigitContext context) {
         return "\tldc " + context.digit.getText();
+    }
+
+    /**
+     * Called as soon as a function is executed. This can happen anywhere in the source code. The instruction
+     * "invokestatic" (followed by the class name) calls a static function. The entire method signature is therefore
+     * specified.The opcode is 0xB8 (184).
+     *
+     * @param context Rule for the function call
+     * @return Instruction for a function call
+     */
+    @Override
+    public String visitFunctionCall(FunctionCallContext context) {
+        StringBuilder result = new StringBuilder();
+        // Save the values of the arguments to the stack
+        String currentParametersInstructions = visit(context.currentParams);
+        if (currentParametersInstructions != null)
+            result.append(currentParametersInstructions + "\n");
+        result.append("\tinvokestatic E/" + context.funcId.getText() + "(");
+        // Get number of parameters
+        int parameterNumber = context.currentParams.exprs.size();
+        result.append(repeatType("I", parameterNumber));
+        result.append(")I\n");
+        return result.toString();
+    }
+
+    /**
+     * Called when a function is defined.  The return value is placed on the stack and returned using "ireturn".
+     * The opcode is 0xAC (172).
+     *
+     * @param context Rule for the function definition
+     * @return Instructions for a function definition
+     */
+    @Override
+    public String visitFunctionDefinition(FunctionDefinitionContext context) {
+        // Work with a (different) local scope
+        Map<String, Integer> globalVariables = variables;
+        variables = new HashMap<>();
+        // Store all variables regarding formal parameters
+        visit(context.formalParams);
+        // Generate code for the statements in the function body
+        String statements = visit(context.stmts);
+        StringBuilder result = new StringBuilder(".method public static " + context.funcId.getText() + "(");
+        int parameterNumber = context.formalParams.decls.size();
+        result.append(repeatType("I", parameterNumber));
+        result.append(")I\n" +
+                "\t.limit stack 100\n" +
+                "\t.limit locals 100\n" +
+                // The return value can also be entered directly.
+                (statements == null ? "" : statements) + "\n" +
+                // Get instructions
+                visit(context.returnVal) + "\n" +
+                "\tireturn\n" +
+                ".end method");
+        variables = globalVariables;
+        return result.toString();
+    }
+
+    /**
+     * Repeats the placeholders of the data types for parameters regarding functions.
+     *
+     * @param type Type
+     * @param count How often should the placeholder be repeated?
+     * @return Repeated placeholders
+     */
+    private String repeatType(String type, int count) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < count; ++i)
+            result.append(type);
+        return result.toString();
     }
 
     /**

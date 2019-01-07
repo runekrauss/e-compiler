@@ -2,6 +2,7 @@ package com.runekrauss.compiler;
 
 import com.runekrauss.compiler.exception.AlreadyDefinedVariableException;
 import com.runekrauss.compiler.exception.UndeclaredVariableException;
+import com.runekrauss.compiler.exception.UndefinedFunctionException;
 import jasmin.ClassFile;
 import org.antlr.v4.runtime.CharStreams;
 import org.testng.Assert;
@@ -60,6 +61,10 @@ public class CompilerTest {
                 {"int _a; _a = 5; print(_a);", "5" + System.lineSeparator()},
                 {"int a; a = 5; print(a+3);", "8" + System.lineSeparator()},
                 {"int a; a = 5; int b; b = 3; print(a+b);", "8" + System.lineSeparator()},
+                {"int get_number() { return 3; } print(get_number());", "3" + System.lineSeparator()},
+                {"int get_number() { int n; n = 3; return n; } print(get_number());", "3" + System.lineSeparator()},
+                {"int get_number() { int n; n = 3; return n; } int n; n = 5; print(get_number()); print(n);", "3" + System.lineSeparator() + "5" + System.lineSeparator()},
+                {"int mul(int a, int b) { return a*b; } print(mul(3, 5));", "15" + System.lineSeparator()}
         };
     }
 
@@ -84,8 +89,14 @@ public class CompilerTest {
         compileAndRun("int a;" + System.lineSeparator() + "int a;");
     }
 
+    @Test(expectedExceptions = UndefinedFunctionException.class, expectedExceptionsMessageRegExp = "1:6 Undefined function: <foo>")
+    public void testReadingUndefinedFunction() throws Exception {
+        compileAndRun("print(foo());");
+    }
+
     private String compileAndRun(String sourceCode) throws Exception {
         sourceCode = Main.compile( CharStreams.fromString(sourceCode) );
+        //System.out.println(sourceCode);
         ClassFile classFile = new ClassFile();
         classFile.readJasmin(new StringReader(sourceCode), "", false);
         Path outputPath = tempDir.resolve(classFile.getClassName() + ".class");

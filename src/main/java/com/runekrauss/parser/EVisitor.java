@@ -17,11 +17,32 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(EParser.ProgramContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code MainStatement}
+	 * labeled alternative in {@link EParser#command}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMainStatement(EParser.MainStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ProgramFunction}
+	 * labeled alternative in {@link EParser#command}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProgramFunction(EParser.ProgramFunctionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link EParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitStatement(EParser.StatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Function}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(EParser.FunctionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Digit}
 	 * labeled alternative in {@link EParser#expression}.
@@ -89,4 +110,34 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssignment(EParser.AssignmentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#functionDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionDefinition(EParser.FunctionDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#formalParameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFormalParameters(EParser.FormalParametersContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#statements}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatements(EParser.StatementsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#functionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCall(EParser.FunctionCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#currentParameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCurrentParameters(EParser.CurrentParametersContext ctx);
 }
