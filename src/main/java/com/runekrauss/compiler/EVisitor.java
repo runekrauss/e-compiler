@@ -2,6 +2,7 @@ package com.runekrauss.compiler;
 
 import com.runekrauss.compiler.exception.AlreadyDefinedVariableException;
 import com.runekrauss.compiler.exception.UndeclaredVariableException;
+import com.runekrauss.compiler.exception.UndefinedFunctionException;
 import com.runekrauss.parser.EBaseVisitor;
 import com.runekrauss.parser.EParser.ProgramContext;
 import com.runekrauss.parser.EParser.MainStatementContext;
@@ -20,8 +21,10 @@ import com.runekrauss.parser.EParser.FunctionDefinitionContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Processes the syntax tree for code generation by traversing it (post order).
@@ -35,6 +38,25 @@ public class EVisitor extends EBaseVisitor<String> {
      * table.
      */
     private Map<String, Integer> variables = new HashMap<>();
+
+    /**
+     * A set with all already defined functions
+     */
+    private final Set<String> functions;
+
+    /**
+     * Creates a visitor for semantic analysis and subsequent code generation where all defined functions are already
+     * known.
+     *
+     * @param definedFunctions All defined functions after the first traversing
+     */
+    public EVisitor(Set<String> definedFunctions) {
+        // If there are no functions
+        if (definedFunctions == null)
+            functions = Collections.emptySet();
+        else
+            functions = definedFunctions;
+    }
 
     /**
      * The program has several children, namely once functions and statements. The respective code is determined
@@ -225,6 +247,9 @@ public class EVisitor extends EBaseVisitor<String> {
      */
     @Override
     public String visitFunctionCall(FunctionCallContext context) {
+        // If the called function does not exist
+        if (!functions.contains(context.funcId.getText()))
+            throw new UndefinedFunctionException(context.funcId);
         StringBuilder result = new StringBuilder();
         // Save the values of the arguments to the stack
         String currentParametersInstructions = visit(context.currentParams);
