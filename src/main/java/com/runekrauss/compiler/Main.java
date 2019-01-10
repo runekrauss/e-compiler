@@ -7,8 +7,6 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import java.util.Set;
-
 /**
  * Represents a compiler for the language E:
  *  EBNF ->(ANTLR4) Lexer/Parser ->(Code) Syntax tree ->(Visitor) Assembly ->(Jasmin) Bytecode ->(Java) Output
@@ -47,7 +45,7 @@ public class Main {
         // Start rule
         ParseTree tree = parser.program();
         // Collect all function names first
-        Set<String> definedFunctions = new FunctionVisitor().visit(tree);
+        FunctionList definedFunctions = FunctionVisitor.findFunctions(tree);
         return createAssembly(new EVisitor(definedFunctions).visit(tree));
     }
 

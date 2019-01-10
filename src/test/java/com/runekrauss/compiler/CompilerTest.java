@@ -1,5 +1,6 @@
 package com.runekrauss.compiler;
 
+import com.runekrauss.compiler.exception.AlreadyDefinedFunctionException;
 import com.runekrauss.compiler.exception.AlreadyDefinedVariableException;
 import com.runekrauss.compiler.exception.UndeclaredVariableException;
 import com.runekrauss.compiler.exception.UndefinedFunctionException;
@@ -64,7 +65,8 @@ public class CompilerTest {
                 {"int get_number() { return 3; } print(get_number());", "3" + System.lineSeparator()},
                 {"int get_number() { int n; n = 3; return n; } print(get_number());", "3" + System.lineSeparator()},
                 {"int get_number() { int n; n = 3; return n; } int n; n = 5; print(get_number()); print(n);", "3" + System.lineSeparator() + "5" + System.lineSeparator()},
-                {"int mul(int a, int b) { return a*b; } print(mul(3, 5));", "15" + System.lineSeparator()}
+                {"int mul(int a, int b) { return a*b; } print(mul(3, 5));", "15" + System.lineSeparator()},
+                {"int get_val() { return 1; } int get_val(int a) { return a; } print(get_val()); print(get_val(5));", "1" + System.lineSeparator() + "5" + System.lineSeparator()}
         };
     }
 
@@ -92,6 +94,11 @@ public class CompilerTest {
     @Test(expectedExceptions = UndefinedFunctionException.class, expectedExceptionsMessageRegExp = "1:6 Undefined function: <foo>")
     public void testReadingUndefinedFunction() throws Exception {
         compileAndRun("print(foo());");
+    }
+
+    @Test(expectedExceptions = AlreadyDefinedFunctionException.class, expectedExceptionsMessageRegExp = "2:4 Already defined function: <get_val>")
+    public void testWritingAlreadyDefinedFunction() throws Exception {
+        compileAndRun("int get_val() { return 1; }" + "\n" + "int get_val() { return 2; }");
     }
 
     private String compileAndRun(String sourceCode) throws Exception {

@@ -21,10 +21,8 @@ import com.runekrauss.parser.EParser.FunctionDefinitionContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Processes the syntax tree for code generation by traversing it (post order).
@@ -40,9 +38,9 @@ public class EVisitor extends EBaseVisitor<String> {
     private Map<String, Integer> variables = new HashMap<>();
 
     /**
-     * A set with all already defined functions
+     * A list with all already defined functions
      */
-    private final Set<String> functions;
+    private final FunctionList functions;
 
     /**
      * Creates a visitor for semantic analysis and subsequent code generation where all defined functions are already
@@ -50,10 +48,10 @@ public class EVisitor extends EBaseVisitor<String> {
      *
      * @param definedFunctions All defined functions after the first traversing
      */
-    public EVisitor(Set<String> definedFunctions) {
+    public EVisitor(FunctionList definedFunctions) {
         // If there are no functions
         if (definedFunctions == null)
-            functions = Collections.emptySet();
+            throw new NullPointerException();
         else
             functions = definedFunctions;
     }
@@ -247,8 +245,10 @@ public class EVisitor extends EBaseVisitor<String> {
      */
     @Override
     public String visitFunctionCall(FunctionCallContext context) {
+        // Get number of parameters
+        int parameterNumber = context.currentParams.exprs.size();
         // If the called function does not exist
-        if (!functions.contains(context.funcId.getText()))
+        if (!functions.contains(context.funcId.getText(), parameterNumber))
             throw new UndefinedFunctionException(context.funcId);
         StringBuilder result = new StringBuilder();
         // Save the values of the arguments to the stack
@@ -256,8 +256,6 @@ public class EVisitor extends EBaseVisitor<String> {
         if (currentParametersInstructions != null)
             result.append(currentParametersInstructions + "\n");
         result.append("\tinvokestatic E/" + context.funcId.getText() + "(");
-        // Get number of parameters
-        int parameterNumber = context.currentParams.exprs.size();
         result.append(repeatType("I", parameterNumber));
         result.append(")I\n");
         return result.toString();
@@ -311,6 +309,7 @@ public class EVisitor extends EBaseVisitor<String> {
 
     /**
      * Since the method visitChildren() is executed on several nodes, it is merged to create a string.
+     * The Visitor is always at exactly one point in the tree.
      *
      * @param aggregate Current result
      * @param nextResult Next result

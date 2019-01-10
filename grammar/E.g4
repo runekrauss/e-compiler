@@ -4,7 +4,7 @@ grammar E;
 // PARSER RULES
 
 // Start rule
-// It is evaluated from right to left.
+// It is evaluated from left to right.
 // A program consists of statements or functions.
 
 program                 : command+

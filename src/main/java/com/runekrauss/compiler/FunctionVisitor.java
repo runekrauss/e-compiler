@@ -1,11 +1,9 @@
 package com.runekrauss.compiler;
 
+import com.runekrauss.compiler.exception.AlreadyDefinedFunctionException;
 import com.runekrauss.parser.EBaseVisitor;
 import com.runekrauss.parser.EParser.FunctionDefinitionContext;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Traverses the AST before the main traverse to determine all valid function definitions (names). Thus it is also
@@ -13,32 +11,39 @@ import java.util.Set;
  *
  * @author Rune Krauss
  */
-public class FunctionVisitor extends EBaseVisitor<Set<String>> {
+public class FunctionVisitor {
     /**
-     * Returns a function name in a set.
+     * Represents a pure function to collect the defined functions in the respective program.
      *
-     * @param context Function definition rule
-     * @return Function name in a set
+     * @param tree AST
+     * @return Defined functions
      */
-    @Override
-    public Set<String> visitFunctionDefinition(FunctionDefinitionContext context) {
-        String functionId = context.funcId.getText();
-        return Collections.singleton(functionId);
-    }
-
-    /**
-     * Since there can be several function definitions (names), these are combined here.
-     *
-     * @param aggregate Current result
-     * @param nextResult Next result
-     * @return Function definitions
-     */
-    @Override
-    protected Set<String> aggregateResult(Set<String> aggregate, Set<String> nextResult) {
-        if (aggregate == null) return nextResult;
-        if (nextResult == null) return aggregate;
-        Set<String> combinedFunctionIds = new HashSet<>(aggregate);
-        combinedFunctionIds.addAll(nextResult);
-        return combinedFunctionIds;
+    public static FunctionList findFunctions(final ParseTree tree) {
+        /**
+         * Remembers all defined functions.
+         */
+        final FunctionList definedFunctions = new FunctionList();
+        /**
+         * An anonymous class
+         */
+        new EBaseVisitor<Void>() {
+            /**
+             * Visits function definitions.
+             *
+             * @param context Function definition rule
+             * @return null
+             */
+            @Override
+            public Void visitFunctionDefinition(FunctionDefinitionContext context) {
+                String functionId = context.funcId.getText();
+                int parameterNumber = context.formalParams.decls.size();
+                // Has a function regarding the signature already been defined?
+                if (definedFunctions.contains(functionId, parameterNumber))
+                    throw new AlreadyDefinedFunctionException(context.funcId);
+                definedFunctions.add(functionId, parameterNumber);
+                return null;
+            }
+        }.visit(tree);
+        return definedFunctions;
     }
 }
