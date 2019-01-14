@@ -14,6 +14,7 @@ import com.runekrauss.parser.EParser.AdditionContext;
 import com.runekrauss.parser.EParser.PrintContext;
 import com.runekrauss.parser.EParser.VariableDeclarationContext;
 import com.runekrauss.parser.EParser.AssignmentContext;
+import com.runekrauss.parser.EParser.BranchContext;
 import com.runekrauss.parser.EParser.VariableContext;
 import com.runekrauss.parser.EParser.DigitContext;
 import com.runekrauss.parser.EParser.FunctionCallContext;
@@ -32,15 +33,20 @@ import java.util.Map;
  */
 public class EVisitor extends EBaseVisitor<String> {
     /**
-     * The variables in the table are accessed numerically. For this reason, the names are mapped to positions in the
-     * table.
-     */
-    private Map<String, Integer> variables = new HashMap<>();
-
-    /**
      * A list with all already defined functions
      */
     private final FunctionList functions;
+
+    /**
+     * The variables in the table are accessed numerically. For this reason, the names are mapped to positions in the
+     * table.
+     */
+    private Map<String, Integer> variables;
+
+    /**
+     * Counts the branches because no label may be ambiguous.
+     */
+    private int branchCounter;
 
     /**
      * Creates a visitor for semantic analysis and subsequent code generation where all defined functions are already
@@ -54,6 +60,8 @@ public class EVisitor extends EBaseVisitor<String> {
             throw new NullPointerException();
         else
             functions = definedFunctions;
+        variables = new HashMap<>();
+        branchCounter = 0;
     }
 
     /**
@@ -71,11 +79,11 @@ public class EVisitor extends EBaseVisitor<String> {
             ParseTree child = context.getChild(i);
             String instructions = visit(child);
             if (child instanceof MainStatementContext)
-                statements.append(instructions + "\n");
+                statements.append(instructions + '\n');
             else
-                functions.append(instructions + "\n");
+                functions.append(instructions + '\n');
         }
-        return "\n" + functions.toString() + "\n" +
+        return '\n' + functions.toString() + '\n' +
                 ".method public static main([Ljava/lang/String;)V\n" +
                 "\t.limit stack 100\n" +
                 "\t.limit locals 100\n" +
@@ -166,7 +174,7 @@ public class EVisitor extends EBaseVisitor<String> {
          * 3. Output the value.
          */
         return "\tgetstatic java/lang/System/out Ljava/io/PrintStream;\n" +
-                visit(context.arg) + "\n" +
+                visit(context.arg) + '\n' +
                 "\tinvokevirtual java/io/PrintStream/println(I)V";
     }
 
@@ -196,7 +204,34 @@ public class EVisitor extends EBaseVisitor<String> {
      */
     @Override
     public String visitAssignment(AssignmentContext context) {
-        return visit(context.expr) + "\n" + "\tistore " + getVarIndexById(context.varId);
+        return visit(context.expr) + "\n\tistore " + getVarIndexById(context.varId);
+    }
+
+    /**
+     * Is called if a branch like if-else exists. The branch was implemented with the command "ifne" and the respective
+     * opcode is 0x9A (154). The basic structure is ifne else .. false .. goto exit .. else: true .. exit: ...
+     *
+     * @param context Rule for the branch
+     * @return Instruction regarding the branch
+     */
+    @Override
+    public String visitBranch(BranchContext context) {
+        // Generate code for conditions
+        String conditionInstructions = visit(context.cond);
+        // If the condition is true (everything except 0 is true), this code is generated
+        String onTrueInstructions = visit(context.onTrue);
+        // If the condition is false, this code is generated
+        String onFalseInstructions = visit(context.onFalse);
+        // Each branch must be unique
+        int branch_number = branchCounter;
+        ++branch_number;
+        return conditionInstructions + '\n' +
+                "\tifne else" + branch_number + '\n' +
+                onFalseInstructions + '\n' +
+                "\tgoto exit" + branch_number + '\n' +
+                "else" + branch_number + ":\n" +
+                onTrueInstructions + '\n' +
+                "exit" + branch_number + ":\n";
     }
 
     /**
@@ -254,7 +289,7 @@ public class EVisitor extends EBaseVisitor<String> {
         // Save the values of the arguments to the stack
         String currentParametersInstructions = visit(context.currentParams);
         if (currentParametersInstructions != null)
-            result.append(currentParametersInstructions + "\n");
+            result.append(currentParametersInstructions + '\n');
         result.append("\tinvokestatic E/" + context.funcId.getText() + "(");
         result.append(repeatType("I", parameterNumber));
         result.append(")I\n");
@@ -284,9 +319,9 @@ public class EVisitor extends EBaseVisitor<String> {
                 "\t.limit stack 100\n" +
                 "\t.limit locals 100\n" +
                 // The return value can also be entered directly.
-                (statements == null ? "" : statements) + "\n" +
+                (statements == null ? "" : statements) + '\n' +
                 // Get instructions
-                visit(context.returnVal) + "\n" +
+                visit(context.returnVal) + '\n' +
                 "\tireturn\n" +
                 ".end method");
         variables = globalVariables;
@@ -319,6 +354,6 @@ public class EVisitor extends EBaseVisitor<String> {
     protected String aggregateResult(String aggregate, String nextResult) {
         if (aggregate == null) return nextResult;
         if (nextResult == null) return aggregate;
-        else return aggregate + "\n" + nextResult;
+        else return aggregate + '\n' + nextResult;
     }
 }

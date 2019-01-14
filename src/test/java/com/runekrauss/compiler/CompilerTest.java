@@ -43,35 +43,47 @@ public class CompilerTest {
     }
 
     @DataProvider
-    public Object[][] provideCodeExpectedOutput() {
+    public Object[][] provideCodeExpectedOutput() throws Exception {
         return new Object[][] {
-                {"print(1+2);", "3" + System.lineSeparator()},
-                {"print(1+2+50);", "53" + System.lineSeparator()},
-                {"print(5-3);", "2" + System.lineSeparator()},
-                {"print(2*5);", "10" + System.lineSeparator()},
-                {"print(9/3);", "3" + System.lineSeparator()},
-                {"print(10/3);", "3" + System.lineSeparator()},
-                {"print(12%5);", "2" + System.lineSeparator()},
-                {"print(15/5*3);", "9" + System.lineSeparator()},
-                {"print(3-2+5);", "6" + System.lineSeparator()},
-                {"print(3+2-5);", "0" + System.lineSeparator()},
-                {"print(9-1*3);", "6" + System.lineSeparator()},
-                {"print(3+5*2);", "13" + System.lineSeparator()},
-                {"print(1); print(2);", "1" + System.lineSeparator() + "2" + System.lineSeparator()},
-                {"int a; a = 5; print(a);", "5" + System.lineSeparator()},
-                {"int _a; _a = 5; print(_a);", "5" + System.lineSeparator()},
-                {"int a; a = 5; print(a+3);", "8" + System.lineSeparator()},
-                {"int a; a = 5; int b; b = 3; print(a+b);", "8" + System.lineSeparator()},
-                {"int get_number() { return 3; } print(get_number());", "3" + System.lineSeparator()},
-                {"int get_number() { int n; n = 3; return n; } print(get_number());", "3" + System.lineSeparator()},
-                {"int get_number() { int n; n = 3; return n; } int n; n = 5; print(get_number()); print(n);", "3" + System.lineSeparator() + "5" + System.lineSeparator()},
-                {"int mul(int a, int b) { return a*b; } print(mul(3, 5));", "15" + System.lineSeparator()},
-                {"int get_val() { return 1; } int get_val(int a) { return a; } print(get_val()); print(get_val(5));", "1" + System.lineSeparator() + "5" + System.lineSeparator()}
+                {"Addition", "print(1+2);", "3" + System.lineSeparator()},
+                {"Chained addition", "print(1+2+50);", "53" + System.lineSeparator()},
+                {"Subtraction", "print(5-3);", "2" + System.lineSeparator()},
+                {"Multiplication", "print(2*5);", "10" + System.lineSeparator()},
+                {"Division", "print(9/3);", "3" + System.lineSeparator()},
+                {"Integer division", "print(10/3);", "3" + System.lineSeparator()},
+                {"Modulo", "print(12%5);", "2" + System.lineSeparator()},
+                {"Division and multiplication", "print(15/5*3);", "9" + System.lineSeparator()},
+                {"Subtraction and addition", "print(3-2+5);", "6" + System.lineSeparator()},
+                {"Addition and subtraction", "print(3+2-5);", "0" + System.lineSeparator()},
+                {"Order of operations", "print(9-1*3);", "6" + System.lineSeparator()},
+                {"Order of operations 2", "print(3+5*2);", "13" + System.lineSeparator()},
+                {"Multiple output", "print(1); print(2);", "1" + System.lineSeparator() + "2" + System.lineSeparator()},
+                {"Variable declaration", "int a; a = 5; print(a);", "5" + System.lineSeparator()},
+                {"Variable declaration 2", "int _a; _a = 5; print(_a);", "5" + System.lineSeparator()},
+                {"Variable declaration and constant", "int a; a = 5; print(a+3);", "8" + System.lineSeparator()},
+                {"Variable declaration and calculation", "int a; a = 5; int b; b = 3; print(a+b);", "8" + System.lineSeparator()},
+                loadTestCode("function/simple", "3" + System.lineSeparator()),
+                loadTestCode("function/local_parameter", "3" + System.lineSeparator()),
+                loadTestCode("function/scope", "3" + System.lineSeparator() + "5" + System.lineSeparator()),
+                loadTestCode("function/current_formal_parameter", "15" + System.lineSeparator()),
+                loadTestCode("function/overloading", "1" + System.lineSeparator() + "5" + System.lineSeparator()),
+                loadTestCode("branch/if-else_zero_false", "1" + System.lineSeparator()),
+                loadTestCode("branch/if-else_one_true", "1" + System.lineSeparator()),
+                loadTestCode("branch/if-else_other_true", "1" + System.lineSeparator())
         };
     }
 
+    private static String[] loadTestCode(String filePath, String expectedResult) throws Exception {
+        try (InputStream input = CompilerTest.class.getResourceAsStream("/" + filePath + ".e")) {
+            if (input == null)
+                throw new IllegalArgumentException("The file " + filePath + ".e does not exist");
+            String code = new Scanner(input).useDelimiter("\\A").next();
+            return new String[]{filePath, code, expectedResult};
+        }
+    }
+
     @Test(dataProvider = "provideCodeExpectedOutput")
-    public void testCodeExecution(String sourceCode, String expectedOutput) throws Exception {
+    public void testCodeExecution(String description, String sourceCode, String expectedOutput) throws Exception {
         String currentOutput = compileAndRun(sourceCode);
         Assert.assertEquals(currentOutput, expectedOutput);
     }
@@ -98,7 +110,7 @@ public class CompilerTest {
 
     @Test(expectedExceptions = AlreadyDefinedFunctionException.class, expectedExceptionsMessageRegExp = "2:4 Already defined function: <get_val>")
     public void testWritingAlreadyDefinedFunction() throws Exception {
-        compileAndRun("int get_val() { return 1; }" + "\n" + "int get_val() { return 2; }");
+        compileAndRun("int get_val() { return 1; }" + '\n' + "int get_val() { return 2; }");
     }
 
     private String compileAndRun(String sourceCode) throws Exception {

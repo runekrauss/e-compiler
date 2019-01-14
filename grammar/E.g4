@@ -14,16 +14,17 @@ program                 : command+
 // This is a helper for the program because of functions must not be in the main method
 // during code generation. Therefore statements and functions are separated.
 
-command                 : statement ';' #MainStatement
+command                 : statement #MainStatement
                         | functionDefinition #ProgramFunction
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
-// Statements in the program code
+// Statements in the program code (also without a semicolon at the end)
 
-statement               : print
-                        | variableDeclaration
-                        | assignment
+statement               : print ';'
+                        | variableDeclaration ';'
+                        | assignment ';'
+                        | branch
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -60,6 +61,16 @@ assignment              : varId=IDENTIFIER '=' expr=expression
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
+// Identifies a branch through which decisions can be made
+branch                  : 'if' '(' cond=expression ')' onTrue=block 'else' onFalse=block
+                        ;
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------
+// Provides a basic block (entry and exit from a control flow)
+block                   : '{' statements '}'
+                        ;
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------
 // Definition of a function with parameters and a body
 
 functionDefinition      : TYPE funcId=IDENTIFIER '(' formalParams=formalParameters ')' '{' stmts=statements 'return' returnVal=expression ';' '}'
@@ -75,7 +86,7 @@ formalParameters        : decls+=variableDeclaration (',' decls+=variableDeclara
 // ----------------------------------------------------------------------------------------------------------------------------------------------
 // A function can consist of several statements (list). However, there does not have to be
 // statements, i.e. a return can also be made directly.
-statements              : (statement ';')*
+statements              : statement*
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------

@@ -111,6 +111,18 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssignment(EParser.AssignmentContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link EParser#branch}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBranch(EParser.BranchContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#block}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlock(EParser.BlockContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link EParser#functionDefinition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
