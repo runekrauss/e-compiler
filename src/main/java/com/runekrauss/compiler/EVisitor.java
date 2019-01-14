@@ -174,8 +174,8 @@ public class EVisitor extends EBaseVisitor<String> {
          * 3. Output the value.
          */
         return "\tgetstatic java/lang/System/out Ljava/io/PrintStream;\n" +
-                visit(context.arg) + '\n' +
-                "\tinvokevirtual java/io/PrintStream/println(I)V";
+                visit(context.arg) +
+                "\n\tinvokevirtual java/io/PrintStream/println(I)V";
     }
 
     /**

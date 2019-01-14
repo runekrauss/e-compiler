@@ -61,12 +61,12 @@ assignment              : varId=IDENTIFIER '=' expr=expression
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
-// Identifies a branch through which decisions can be made
+// Identifies a branch through which decisions can be made.
 branch                  : 'if' '(' cond=expression ')' onTrue=block 'else' onFalse=block
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
-// Provides a basic block (entry and exit from a control flow)
+// Provides a basic block (entry and exit from a control flow).
 block                   : '{' statements '}'
                         ;
 

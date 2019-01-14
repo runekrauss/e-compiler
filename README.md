@@ -20,6 +20,15 @@ Hash tables are used to enable fast access to identifiers, strings and other con
 ## Installation
 At first, clone or download this project. Afterwards, go to the terminal and type `mvn install` to create and install the related JAR file. To delete the created folder *target*, the command `mvn clean` must be executed. To execute the unit tests, there is the command `mvn test`.
 
+## Language components
++ Outputs
++ Arithmetic operators
++ Variables
++ (Overloaded) functions
++ Conditional statements
++ Error handling
++ ...
+
 ## Usage
 Navigate to the folder *target* and type `java -jar *.jar` to execute the created JAR file. 
 
