@@ -22,6 +22,7 @@ command                 : statement #MainStatement
 // Statements in the program code (also without a semicolon at the end)
 
 statement               : print ';'
+                        | printLine ';'
                         | variableDeclaration ';'
                         | assignment ';'
                         | branch
@@ -29,7 +30,7 @@ statement               : print ';'
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
 // Mathematical operators
-// Precedence: div, mul (commutative), rem, sub, add
+// Precedence: div, mul (commutative), rem, sub, add, comp (same precedences), and, or
 // Labels allow access in the code.
 
 expression              : expression '/' expression #Division
@@ -37,15 +38,26 @@ expression              : expression '/' expression #Division
                         | expression '%' expression #Modulo
                         | expression '-' expression #Subtraction
                         | expression '+' expression #Addition
+                        | expression op=('<' | '<=' | '>' | '>=') expression #RelationalOperation
+                        | lExpr=expression '&&' rExpr=expression #Conjunction
+                        | lExpr=expression '||' rExpr=expression #Disjunction
+                        | expression '^' expression #Contravalence
                         | digit=INT #Digit
+                        | strLit=STRING #String
                         | varId=IDENTIFIER #Variable
                         | functionCall #Function
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
-// Responsible for outputs
+// Responsible for outputs without a new line
 
 print                   : 'print(' arg=expression ')'
+                        ;
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------
+// Responsible for outputs with a new line
+
+printLine               : 'println(' arg=expression ')'
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -127,6 +139,12 @@ DIGIT                   : [0-9]
 // Letters
 
 LETTER                  : [a-zA-Z_]
+                        ;
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------
+// Any number of characters, but as little as possible that the rule is still fulfilled
+
+STRING                  : '"' .*? '"'
                         ;
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------

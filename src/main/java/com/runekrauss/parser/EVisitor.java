@@ -37,13 +37,6 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(EParser.StatementContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Function}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunction(EParser.FunctionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code Digit}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
@@ -72,12 +65,12 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariable(EParser.VariableContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Subtraction}
+	 * Visit a parse tree produced by the {@code Contravalence}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSubtraction(EParser.SubtractionContext ctx);
+	T visitContravalence(EParser.ContravalenceContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Modulo}
 	 * labeled alternative in {@link EParser#expression}.
@@ -85,6 +78,48 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitModulo(EParser.ModuloContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code RelationalOperation}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRelationalOperation(EParser.RelationalOperationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code String}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitString(EParser.StringContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Function}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(EParser.FunctionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Disjunction}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDisjunction(EParser.DisjunctionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Subtraction}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubtraction(EParser.SubtractionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Conjunction}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConjunction(EParser.ConjunctionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Division}
 	 * labeled alternative in {@link EParser#expression}.
@@ -98,6 +133,12 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPrint(EParser.PrintContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#printLine}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrintLine(EParser.PrintLineContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link EParser#variableDeclaration}.
 	 * @param ctx the parse tree

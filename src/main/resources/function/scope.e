@@ -6,5 +6,5 @@ int get_number() {
 
 int n;
 n = 5;
-print(get_number());
+println(get_number());
 print(n);
