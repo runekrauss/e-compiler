@@ -10,10 +10,10 @@ int x;
 x = 1;
 int a;
 if (x) {
-    a = 3;
-} else {
     a = 5;
+} else {
+    a = 3;
 }
 int b;
-b = 7+5*3;
+b = a << 1;
 print(mul(a, b));

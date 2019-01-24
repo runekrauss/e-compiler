@@ -13,15 +13,20 @@ public class DataTypeStack {
     /**
      * A linked list of types
      */
-    private Deque<DataType> typesStack = new LinkedList<>();
+    private Deque<TypeInformation> typesStack;
+
+    DataTypeStack() {
+        typesStack = new LinkedList<>();
+    }
 
     /**
      * Pushes a data type to the stack.
      *
-     * @param dataType Specific data type
+     * @param type Specific data type
      */
-    void push(DataType dataType) {
-        typesStack.push(dataType);
+    void push(TypeInformation type) {
+        if (type.getType() != DataType.VOID)
+            typesStack.push(type);
     }
 
     /**
@@ -29,7 +34,16 @@ public class DataTypeStack {
      *
      * @return Data type
      */
-    DataType pop() {
+    TypeInformation pop() {
         return typesStack.pop();
+    }
+
+    /**
+     * Peeks a data type off the stack.
+     *
+     * @return Data type
+     */
+    TypeInformation peek() {
+        return typesStack.peek();
     }
 }

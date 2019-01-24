@@ -72,6 +72,8 @@ public class CompilerTest {
                 loadTestCode("branch/if-else_zero_false", "1"),
                 loadTestCode("branch/if-else_one_true", "1"),
                 loadTestCode("branch/if-else_other_true", "1"),
+                {"Left shift", "print(5 << 1);", "10"},
+                {"Right shift", "print(4 >> 1);", "2"},
                 {"Lower than to true", "print(0 < 1);", "1"},
                 {"Lower than to false", "print(2 < 2);", "0"},
                 {"Lower than to false 2", "print(3 < 2);", "0"},
@@ -84,6 +86,10 @@ public class CompilerTest {
                 {"Greater than/equal to true", "print(1 >= 0);", "1"},
                 {"Greater than/equal to true 2", "print(2 >= 2);", "1"},
                 {"Greater than/equal to false", "print(0 >= 1);", "0"},
+                {"Equal to true", "print(0 == 0);", "1"},
+                {"Equal to false", "print(1 == 0);", "0"},
+                {"Not equal to true", "print(1 != 0);", "1"},
+                {"Not equal to false", "print(0 != 0);", "0"},
                 {"Logical conjunction to true", "print(1 && 1);", "1"},
                 {"Logical conjunction to false", "print(0 && 1);", "0"},
                 {"Logical conjunction to false 2", "print(1 && 0);", "0"},
@@ -98,7 +104,9 @@ public class CompilerTest {
                 {"Logical contravalence to true 2", "print(1 ^ 0);", "1"},
                 {"Logical contravalence to false", "print(0 ^ 0);", "0"},
                 {"Logical contravalence to false 2", "print(0 ^ 0);", "0"},
-                {"Print string literal", "print(\"Hello world\");", "Hello world"}
+                {"Print string literal", "print(\"Hello world\");", "Hello world"},
+                loadTestCode("comments/line_comment", "5"),
+                loadTestCode("comments/multiline_comment", "5")
         };
     }
 

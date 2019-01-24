@@ -38,14 +38,15 @@ public class Main {
      * @return Assembly program
      */
     public static String compile(CharStream sourceCode) {
-        // Control characters are ignored.
+        // Control characters are ignored
         ELexer lexer = new ELexer(sourceCode);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         EParser parser = new EParser(tokens);
         // Start rule
         ParseTree tree = parser.program();
         // Collect all function names first
-        FunctionList definedFunctions = FunctionVisitor.findFunctions(tree);
+        FunctionDefinitionList definedFunctions = FunctionDefinitionVisitor.findFunctions(tree);
+        //LinkedHashMap<String, TypeModel> types = FunctionVisitor.findTypes(tree);
         return createAssembly(new EVisitor(definedFunctions).visit(tree));
     }
 

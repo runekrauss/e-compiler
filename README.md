@@ -38,7 +38,7 @@ If the grammar is changed, the code must be adapted. To do this, the following c
 
 ```
 $ cd grammar
-$ antlr4 -package com.runekrauss.parser -o ../src/main/java/com/runekrauss/parser/ -no-listener -visitor E.g4
+$ antlr -package com.runekrauss.parser -o ../src/main/java/com/runekrauss/parser/ -no-listener -visitor E.g4
 ```
 
 Now look into the class *EBaseVisitor* where you will find a method called *visitTest*:

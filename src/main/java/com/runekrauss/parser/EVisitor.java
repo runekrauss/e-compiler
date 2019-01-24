@@ -1,4 +1,4 @@
-// Generated from E.g4 by ANTLR 4.7.1
+// Generated from E.g4 by ANTLR 4.7.2
 package com.runekrauss.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -17,116 +17,44 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(EParser.ProgramContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code MainStatement}
-	 * labeled alternative in {@link EParser#command}.
+	 * Visit a parse tree produced by {@link EParser#includes}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMainStatement(EParser.MainStatementContext ctx);
+	T visitIncludes(EParser.IncludesContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ProgramFunction}
+	 * Visit a parse tree produced by {@link EParser#module}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitModule(EParser.ModuleContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StatementCommand}
 	 * labeled alternative in {@link EParser#command}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitProgramFunction(EParser.ProgramFunctionContext ctx);
+	T visitStatementCommand(EParser.StatementCommandContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FunctionDefinitionCommand}
+	 * labeled alternative in {@link EParser#command}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionDefinitionCommand(EParser.FunctionDefinitionCommandContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StructDeclarationCommand}
+	 * labeled alternative in {@link EParser#command}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructDeclarationCommand(EParser.StructDeclarationCommandContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link EParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitStatement(EParser.StatementContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Digit}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDigit(EParser.DigitContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Multiplication}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultiplication(EParser.MultiplicationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Addition}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAddition(EParser.AdditionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Variable}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVariable(EParser.VariableContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Contravalence}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitContravalence(EParser.ContravalenceContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Modulo}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitModulo(EParser.ModuloContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code RelationalOperation}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRelationalOperation(EParser.RelationalOperationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code String}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitString(EParser.StringContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Function}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunction(EParser.FunctionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Disjunction}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDisjunction(EParser.DisjunctionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Subtraction}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubtraction(EParser.SubtractionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Conjunction}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConjunction(EParser.ConjunctionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Division}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDivision(EParser.DivisionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link EParser#print}.
 	 * @param ctx the parse tree
@@ -152,17 +80,94 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssignment(EParser.AssignmentContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link EParser#structVariableAssignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructVariableAssignment(EParser.StructVariableAssignmentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#functionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCall(EParser.FunctionCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#currentParameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCurrentParameters(EParser.CurrentParametersContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link EParser#branch}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBranch(EParser.BranchContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link EParser#loop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLoop(EParser.LoopContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link EParser#block}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBlock(EParser.BlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#statements}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatements(EParser.StatementsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code InlineAssembly}
+	 * labeled alternative in {@link EParser#assembly}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInlineAssembly(EParser.InlineAssemblyContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code InvokeAssembly}
+	 * labeled alternative in {@link EParser#assembly}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInvokeAssembly(EParser.InvokeAssemblyContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code InitObject}
+	 * labeled alternative in {@link EParser#assembly}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInitObject(EParser.InitObjectContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code PushToStack}
+	 * labeled alternative in {@link EParser#assembly}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPushToStack(EParser.PushToStackContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code SetTopOfStack}
+	 * labeled alternative in {@link EParser#assembly}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSetTopOfStack(EParser.SetTopOfStackContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#includedFunctionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIncludedFunctionCall(EParser.IncludedFunctionCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#builtinFunctionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBuiltinFunctionCall(EParser.BuiltinFunctionCallContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link EParser#functionDefinition}.
 	 * @param ctx the parse tree
@@ -176,21 +181,154 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFormalParameters(EParser.FormalParametersContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link EParser#statements}.
+	 * Visit a parse tree produced by {@link EParser#structDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStatements(EParser.StatementsContext ctx);
+	T visitStructDeclaration(EParser.StructDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link EParser#functionCall}.
+	 * Visit a parse tree produced by {@link EParser#structInitialization}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunctionCall(EParser.FunctionCallContext ctx);
+	T visitStructInitialization(EParser.StructInitializationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link EParser#currentParameters}.
+	 * Visit a parse tree produced by {@link EParser#assignments}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCurrentParameters(EParser.CurrentParametersContext ctx);
+	T visitAssignments(EParser.AssignmentsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StructInitializationExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructInitializationExpression(EParser.StructInitializationExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code RelationalExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRelationalExpression(EParser.RelationalExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code BuiltinFunctionExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBuiltinFunctionExpression(EParser.BuiltinFunctionExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code IncludedFunctionExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIncludedFunctionExpression(EParser.IncludedFunctionExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code DisjunctionExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDisjunctionExpression(EParser.DisjunctionExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code IntegerExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntegerExpression(EParser.IntegerExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ShiftExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitShiftExpression(EParser.ShiftExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code SubtractionAdditionExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubtractionAdditionExpression(EParser.SubtractionAdditionExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code IdentifierExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifierExpression(EParser.IdentifierExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code BoolExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExpression(EParser.BoolExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FloatingPointExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFloatingPointExpression(EParser.FloatingPointExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StructExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructExpression(EParser.StructExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FunctionExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionExpression(EParser.FunctionExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ContravalenceExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContravalenceExpression(EParser.ContravalenceExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StructArrayExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructArrayExpression(EParser.StructArrayExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StringExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringExpression(EParser.StringExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code DivisionMultiplicationModuloExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDivisionMultiplicationModuloExpression(EParser.DivisionMultiplicationModuloExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ArrayExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayExpression(EParser.ArrayExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ConjunctionExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConjunctionExpression(EParser.ConjunctionExpressionContext ctx);
 }
