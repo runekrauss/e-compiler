@@ -7,6 +7,9 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Represents a compiler for the language E:
  *  EBNF ->(ANTLR4) Lexer/Parser ->(Code) Syntax tree ->(Visitor) Assembly ->(Jasmin) Bytecode ->(Java) Output
@@ -44,10 +47,14 @@ public class Main {
         EParser parser = new EParser(tokens);
         // Start rule
         ParseTree tree = parser.program();
-        // Collect all function names first
-        FunctionDefinitionList definedFunctions = FunctionDefinitionVisitor.findFunctions(tree);
-        //LinkedHashMap<String, TypeModel> types = FunctionVisitor.findTypes(tree);
-        return createAssembly(new EVisitor(definedFunctions).visit(tree));
+        // Collect all function definitions (without body)
+        FunctionPrototypeList definedFunctions = FunctionDefinitionVisitor.findFunctions(tree);
+        // Collect all structs with declared variables and types (including references)
+        LinkedHashMap<String, CustomType> declaredStructs = CustomTypeVisitor.findTypes(tree);
+        // Collect all static variables in the main program (including references to structs)
+        Map<String, TypeInformation> declaredStaticVariables = StaticVariableVisitor.findStaticVariables(tree,
+                declaredStructs);
+        return createAssembly(new EVisitor(definedFunctions, declaredStructs, declaredStaticVariables).visit(tree));
     }
 
     /**

@@ -12,16 +12,33 @@ public class TypeInformation {
     private int id;
 
     /**
-     * Type of the parameter
+     * Type of the field
      */
     private final DataType type;
+
+    /**
+     * Address of a type (structure) regarding references
+     */
+    private int address;
 
     public TypeInformation(DataType type) {
         this.type = type;
     }
 
     public TypeInformation(int id, DataType type) {
+        this.id = id;
         this.type = type;
+    }
+
+    public TypeInformation(DataType type, int address) {
+        this.type = type;
+        this.address = address;
+    }
+
+    public TypeInformation(int id, DataType type, int address) {
+        this.id = id;
+        this.type = type;
+        this.address = address;
     }
 
     public DataType getType() {

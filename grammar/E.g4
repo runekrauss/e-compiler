@@ -252,13 +252,13 @@ IDENTIFIER              : LETTER(LETTER | DIGIT)*
 // ---------------------------------------------------------------------------------------------------------------------
 // Here are the built-in functions of the language E, where an access is possible even without imports.
 
-BUILTINFUNCTION         : 'length'
-                        | 'append'
-                        | 'toInt'
+BUILTINFUNCTION         : 'toInt'
                         | 'toLong'
                         | 'toFloat'
                         | 'toDouble'
                         | 'toString'
+                        | 'append'
+                        | 'length'
                         ;
 
 // ---------------------------------------------------------------------------------------------------------------------

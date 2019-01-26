@@ -19,11 +19,11 @@ public class FunctionDefinitionVisitor {
      * @param tree AST
      * @return Defined functions
      */
-    public static FunctionDefinitionList findFunctions(final ParseTree tree) {
-        // Remember all defined functions
-        final FunctionDefinitionList definedFunctions = new FunctionDefinitionList();
+    public static FunctionPrototypeList findFunctions(final ParseTree tree) {
+        // Remember all prototypes of defined functions
+        final FunctionPrototypeList definedFunctionPrototypes = new FunctionPrototypeList();
         // Notice the built-in functions
-        setBuiltInFunctionDefinitions(definedFunctions);
+        setBuiltInFunctionDefinitions(definedFunctionPrototypes);
         // An anonymous class
         new EBaseVisitor<Void>() {
             /**
@@ -35,63 +35,24 @@ public class FunctionDefinitionVisitor {
             @Override
             public Void visitFunctionDefinition(FunctionDefinitionContext context) {
                 // Get return type
-                DataType returnType = DataType.INT;
-                switch(context.type.getText()) {
-                    case "int":
-                        break;
-                    case "long":
-                        returnType = DataType.LONG;
-                        break;
-                    case "float":
-                        returnType = DataType.FLOAT;
-                        break;
-                    case "double":
-                        returnType = DataType.DOUBLE;
-                        break;
-                    case "String":
-                        returnType = DataType.STRING;
-                        break;
-                    case "void":
-                        returnType = DataType.VOID;
-                        break;
-                    default:
-                        break;
-                }
+                DataType returnType = DataType.getType(context.type.getText());
                 // Get function identifier
                 final String functionId = context.funcId.getText();
                 final int parameterNumber = context.formalParams.decls.size();
                 final TypeInformation[] parameterTypes = new TypeInformation[parameterNumber];
                 // Get parameters
                 for (int i = 0; i < parameterNumber; ++i) {
-                    DataType parameterType = DataType.INT;
-                    switch (context.formalParams.decls.get(i).type.getText()) {
-                        case "int":
-                            break;
-                        case "long":
-                            parameterType = DataType.LONG;
-                            break;
-                        case "float":
-                            parameterType = DataType.FLOAT;
-                            break;
-                        case "double":
-                            parameterType = DataType.DOUBLE;
-                            break;
-                        case "String":
-                            parameterType = DataType.STRING;
-                            break;
-                        default:
-                            break;
-                    }
+                    DataType parameterType = DataType.getType(context.formalParams.decls.get(i).type.getText());
                     parameterTypes[i] = new TypeInformation(parameterType);
                 }
                 // Has a function regarding the signature already been defined?
-                if (definedFunctions.contains(functionId, parameterTypes))
+                if (definedFunctionPrototypes.contains(functionId, parameterTypes))
                     throw new AlreadyDefinedFunctionException(context.funcId);
-                definedFunctions.add(new TypeInformation(returnType), functionId, parameterTypes);
+                definedFunctionPrototypes.add(new TypeInformation(returnType), functionId, parameterTypes);
                 return null;
             }
         }.visit(tree);
-        return definedFunctions;
+        return definedFunctionPrototypes;
     }
 
     /**
@@ -99,9 +60,13 @@ public class FunctionDefinitionVisitor {
      *
      * @param definedFunctions List for defined functions
      */
-    private static void setBuiltInFunctionDefinitions(FunctionDefinitionList definedFunctions) {
+    private static void setBuiltInFunctionDefinitions(FunctionPrototypeList definedFunctions) {
         definedFunctions.add(new TypeInformation(DataType.VOID),"print", new TypeInformation[] {
                 new TypeInformation(DataType.INT)});
+        definedFunctions.add(new TypeInformation(DataType.VOID),"print", new TypeInformation[] {
+                new TypeInformation(DataType.LONG)});
+        definedFunctions.add(new TypeInformation(DataType.VOID),"print", new TypeInformation[] {
+                new TypeInformation(DataType.FLOAT)});
         definedFunctions.add(new TypeInformation(DataType.VOID),"print", new TypeInformation[] {
                 new TypeInformation(DataType.DOUBLE)});
         definedFunctions.add(new TypeInformation(DataType.VOID),"print", new TypeInformation[] {
@@ -109,8 +74,24 @@ public class FunctionDefinitionVisitor {
         definedFunctions.add(new TypeInformation(DataType.VOID),"println", new TypeInformation[] {
                 new TypeInformation(DataType.INT)});
         definedFunctions.add(new TypeInformation(DataType.VOID),"println", new TypeInformation[] {
+                new TypeInformation(DataType.LONG)});
+        definedFunctions.add(new TypeInformation(DataType.VOID),"println", new TypeInformation[] {
+                new TypeInformation(DataType.FLOAT)});
+        definedFunctions.add(new TypeInformation(DataType.VOID),"println", new TypeInformation[] {
                 new TypeInformation(DataType.DOUBLE)});
         definedFunctions.add(new TypeInformation(DataType.VOID),"println", new TypeInformation[] {
                 new TypeInformation(DataType.STRING)});
+        definedFunctions.add(new TypeInformation(DataType.STRING),"append", new TypeInformation[] {
+                new TypeInformation(DataType.STRING)});
+        definedFunctions.add(new TypeInformation(DataType.INT),"length", new TypeInformation[] {
+                new TypeInformation(DataType.IARRAY)});
+        definedFunctions.add(new TypeInformation(DataType.INT),"length", new TypeInformation[] {
+                new TypeInformation(DataType.LARRAY)});
+        definedFunctions.add(new TypeInformation(DataType.INT),"length", new TypeInformation[] {
+                new TypeInformation(DataType.FARRAY)});
+        definedFunctions.add(new TypeInformation(DataType.INT),"length", new TypeInformation[] {
+                new TypeInformation(DataType.DARRAY)});
+        definedFunctions.add(new TypeInformation(DataType.INT),"length", new TypeInformation[] {
+                new TypeInformation(DataType.SARRAY)});
     }
 }

@@ -6,7 +6,7 @@ import com.runekrauss.compiler.exception.UndefinedFunctionException;
 import com.runekrauss.compiler.exception.WrongDataTypeException;
 import com.runekrauss.parser.EBaseVisitor;
 import com.runekrauss.parser.EParser.ProgramContext;
-import com.runekrauss.parser.EParser.MainStatementContext;
+import com.runekrauss.parser.EParser.StatementCommandContext
 import com.runekrauss.parser.EParser.PrintContext;
 import com.runekrauss.parser.EParser.PrintLineContext;
 import com.runekrauss.parser.EParser.VariableDeclarationContext;
@@ -30,6 +30,7 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -42,7 +43,17 @@ public class EVisitor extends EBaseVisitor<String> {
     /**
      * A list with all already defined functions
      */
-    private final FunctionDefinitionList functions;
+    private final FunctionPrototypeList functions;
+
+    /**
+     * Structs with declared variables and types (including references)
+     */
+    LinkedHashMap<String, CustomType> structs;
+
+    /**
+     * Static variables in the main program (including references to structs)
+     */
+    Map<String, TypeInformation> staticVariables;
 
     /**
      * The variables in the table are accessed numerically. For this reason, the names are mapped to positions in the
@@ -85,22 +96,25 @@ public class EVisitor extends EBaseVisitor<String> {
      * known.
      *
      * @param definedFunctions All defined functions after the first traversing
+     * @param declaredStructs All declared structs after the second/third traversing
+     * @param declaredStaticVariables All declared static variables after the fourth traversing
      */
-    public EVisitor(FunctionDefinitionList definedFunctions) {
-        // If there are no functions
-        if (definedFunctions == null) {
-            throw new NullPointerException();
-        }
-        else {
+    public EVisitor(FunctionPrototypeList definedFunctions, LinkedHashMap<String, CustomType> declaredStructs,
+                    Map<String, TypeInformation> declaredStaticVariables) {
+        if (definedFunctions == null || structs == null || staticVariables == null) {
+            throw new NullPointerException("An error has occurred in handling functions, structures or variables");
+        } else {
             functions = definedFunctions;
+            structs = declaredStructs;
+            staticVariables = declaredStaticVariables;
+            variables = new HashMap<>();
+            typeStack = new DataTypeStack();
+            branchCounter = 0;
+            comparisonCounter = 0;
+            conjunctionCounter = 0;
+            disjunctionCounter = 0;
+            isGlobalScope = true;
         }
-        variables = new HashMap<>();
-        typeStack = new DataTypeStack();
-        branchCounter = 0;
-        comparisonCounter = 0;
-        conjunctionCounter = 0;
-        disjunctionCounter = 0;
-        isGlobalScope = true;
     }
 
     /**

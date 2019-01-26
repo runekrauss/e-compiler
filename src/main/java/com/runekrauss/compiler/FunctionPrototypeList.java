@@ -9,14 +9,14 @@ import java.util.List;
  *
  * @author Rune Krauss
  */
-public class FunctionDefinitionList {
+public class FunctionPrototypeList {
     /**
-     * Contains all functions from the respective program.
+     * Contains all function prototypes from the respective program.
      */
-    private List<FunctionDefinition> functionDefinitions;
+    private List<FunctionPrototype> functionPrototypes;
 
-    FunctionDefinitionList() {
-        functionDefinitions = new ArrayList<>();
+    FunctionPrototypeList() {
+        functionPrototypes = new ArrayList<>();
     }
 
     /**
@@ -27,11 +27,11 @@ public class FunctionDefinitionList {
      * @return Status whether the list already contains this function
      */
     public boolean contains(String functionId, TypeInformation[] parameters) {
-        for (FunctionDefinition functionDefinition : functionDefinitions) {
+        for (FunctionPrototype functionPrototype : functionPrototypes) {
             // Get parameters of the current function in the list
-            TypeInformation[] functionParameters = functionDefinition.getParameters();
+            TypeInformation[] functionParameters = functionPrototype.getParameters();
             // The function may only exist if the number of parameters and the function name match
-            if (functionParameters.length == parameters.length && functionId.equals(functionDefinition.getFunctionId())) {
+            if (functionParameters.length == parameters.length && functionId.equals(functionPrototype.getFunctionId())) {
                 if (functionParameters.length == 0 && parameters.length == 0)
                     // There are no parameters available => The function signatures are the same
                     return true;
@@ -51,13 +51,13 @@ public class FunctionDefinitionList {
     }
 
     /**
-     * Adds a method definition to this list.
+     * Adds a method prototype to this list.
      *
      * @param type Type of the function
      * @param functionId Name of this function
      * @param parameters Parameters of the function
      */
     public void add(TypeInformation type, String functionId, TypeInformation[] parameters) {
-        functionDefinitions.add(new FunctionDefinition(type, functionId, parameters));
+        functionPrototypes.add(new FunctionPrototype(type, functionId, parameters));
     }
 }

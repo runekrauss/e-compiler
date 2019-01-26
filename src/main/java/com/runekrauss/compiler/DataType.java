@@ -9,8 +9,9 @@ public enum DataType {
     /**
      * Calls the enum constructor with a specific type regarding the JVM and E.
      */
-    INT("int", "I"), LONG("long", "J"), FLOAT("float", "F"), DOUBLE("double", "D"),
-    STRING("String", "Ljava/lang/String;"), VOID("void", "V");
+    INT("int", "I"), IARRAY("int[]", "[I"), LONG("long", "J"), LARRAY("long[]", "[J"), FLOAT("float", "F"),
+    FARRAY("float[]", "[F"), DOUBLE("double", "D"), DARRAY("double[]", "[D"), STRING("String", "Ljava/lang/String;"),
+    SARRAY("String[]", "[Ljava/lang/String;"), VOID("void", "V"), OBJREF("", "");
 
     /**
      * Type in E
@@ -43,16 +44,28 @@ public enum DataType {
         switch(type) {
             case "int":
                 return INT;
+            case "int[]":
+                return IARRAY;
             case "long":
                 return LONG;
+            case "long[]":
+                return LARRAY;
             case "float":
                 return FLOAT;
+            case "float[]":
+                return FARRAY;
             case "double":
                 return DOUBLE;
+            case "double[]":
+                return DARRAY;
             case "String":
                 return STRING;
-            default:
+            case "String[]":
+                return SARRAY;
+            case "void":
                 return VOID;
+            default:
+                return OBJREF;
         }
     }
 
