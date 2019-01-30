@@ -1,42 +1,41 @@
 package com.runekrauss.compiler;
 
 /**
- * The prototype of a method consists of the type and name of the function as well as the number/types of parameters
- * regarding the order.
+ * The prototype of a method consists of the type and name of the function as well as the
+ * number/types of parameters regarding the order.
  *
  * @author Rune Krauss
  */
 public class FunctionPrototype {
-    /**
-     * Type of the function
-     */
-    private final TypeInformation type;
+  /** Type of the function */
+  private final TypeInformation typeInfo;
 
-    /**
-     * Name of the function
-     */
-    private final String functionId;
+  /** Name of the function */
+  private final String functionId;
 
-    /**
-     * Parameters of the function
-     */
-    private final TypeInformation[] parameters;
+  /** Parameters of the function */
+  private final TypeInformation[] params;
 
-    public FunctionPrototype(TypeInformation type, String functionId, TypeInformation[] parameters) {
-        this.type = type;
-        this.functionId = functionId;
-        this.parameters = parameters;
-    }
+  public FunctionPrototype(
+      final TypeInformation typeInfo, final String functionId, final TypeInformation[] params) {
+    this.typeInfo = typeInfo;
+    this.functionId = functionId;
+    this.params = params;
+  }
 
-    TypeInformation getType() {
-        return type;
-    }
+  public final TypeInformation getTypeInfo() {
+    return typeInfo;
+  }
 
-    String getFunctionId() {
-        return functionId;
-    }
+  public final String getFunctionId() {
+    return functionId;
+  }
 
-    TypeInformation[] getParameters() {
-        return parameters;
-    }
+  public final TypeInformation[] getParams() {
+    return params;
+  }
+
+  public final int getParamNumber() {
+    return params.length;
+  }
 }

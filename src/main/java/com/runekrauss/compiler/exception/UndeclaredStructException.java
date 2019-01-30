@@ -3,21 +3,21 @@ package com.runekrauss.compiler.exception;
 import org.antlr.v4.runtime.Token;
 
 /**
- * A compiler recognizes during context analysis the position and column where a variable was used
+ * A compiler recognizes during context analysis the position and column where a struct was used
  * before the declaration, besides the types of lexemes.
  *
  * @author Rune Krauss
  */
-public class UndeclaredVariableException extends CompilerException {
+public class UndeclaredStructException extends CompilerException {
   /** Which identifier was not declared before use? */
   private final String id;
 
   /**
-   * Creates an exception for incorrect use of a variable.
+   * Creates an exception for incorrect use of a struct.
    *
    * @param var Variable in the code
    */
-  public UndeclaredVariableException(final Token var) {
+  public UndeclaredStructException(final Token var) {
     super(var);
     id = var.getText();
   }
@@ -29,6 +29,6 @@ public class UndeclaredVariableException extends CompilerException {
    */
   @Override
   public String getMessage() {
-    return line + ":" + column + " Undeclared variable: <" + id + ">;";
+    return line + ":" + column + " Undeclared struct: <" + id + ">;";
   }
 }

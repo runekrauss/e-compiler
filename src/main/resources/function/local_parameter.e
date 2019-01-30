@@ -4,4 +4,5 @@ int get_number() {
     return n;
 }
 
-print(get_number());
+int a = get_number();
+print(a);

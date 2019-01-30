@@ -1,5 +1,5 @@
-int get_number() {
-    return 3;
+void call_number() {
+    print(3);
 }
 
-print(get_number());
+call_number();

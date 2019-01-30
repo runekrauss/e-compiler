@@ -29,6 +29,12 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitModule(EParser.ModuleContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link EParser#noMain}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNoMain(EParser.NoMainContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code StatementCommand}
 	 * labeled alternative in {@link EParser#command}.
 	 * @param ctx the parse tree
@@ -92,12 +98,6 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionCall(EParser.FunctionCallContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link EParser#currentParameters}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCurrentParameters(EParser.CurrentParametersContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link EParser#branch}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -109,18 +109,6 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLoop(EParser.LoopContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link EParser#block}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBlock(EParser.BlockContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link EParser#statements}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStatements(EParser.StatementsContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code InlineAssembly}
 	 * labeled alternative in {@link EParser#assembly}.
@@ -175,12 +163,6 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionDefinition(EParser.FunctionDefinitionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link EParser#formalParameters}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFormalParameters(EParser.FormalParametersContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link EParser#structDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -234,6 +216,13 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDisjunctionExpression(EParser.DisjunctionExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code VariableExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableExpression(EParser.VariableExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code IntegerExpression}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
@@ -254,13 +243,6 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSubtractionAdditionExpression(EParser.SubtractionAdditionExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code IdentifierExpression}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIdentifierExpression(EParser.IdentifierExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code BoolExpression}
 	 * labeled alternative in {@link EParser#expression}.
@@ -325,10 +307,53 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayExpression(EParser.ArrayExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code NegationExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNegationExpression(EParser.NegationExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code ConjunctionExpression}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitConjunctionExpression(EParser.ConjunctionExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#currentParameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCurrentParameters(EParser.CurrentParametersContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#block}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlock(EParser.BlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#statements}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatements(EParser.StatementsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#formalParameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFormalParameters(EParser.FormalParametersContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#dataType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDataType(EParser.DataTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link EParser#primitive}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrimitive(EParser.PrimitiveContext ctx);
 }
