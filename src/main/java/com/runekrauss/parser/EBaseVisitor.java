@@ -164,6 +164,13 @@ public class EBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements EVis
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitJvmType(EParser.JvmTypeContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitIncludedFunctionCall(EParser.IncludedFunctionCallContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -192,7 +199,7 @@ public class EBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements EVis
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitStructInitialization(EParser.StructInitializationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitStructArrayInitialization(EParser.StructArrayInitializationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -200,13 +207,6 @@ public class EBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements EVis
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitAssignments(EParser.AssignmentsContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitStructInitializationExpression(EParser.StructInitializationExpressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -318,6 +318,13 @@ public class EBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements EVis
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitTopOfStack(EParser.TopOfStackContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitDivisionMultiplicationModuloExpression(EParser.DivisionMultiplicationModuloExpressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -326,6 +333,13 @@ public class EBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements EVis
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitArrayExpression(EParser.ArrayExpressionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitStructArrayInitializationExpression(EParser.StructArrayInitializationExpressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

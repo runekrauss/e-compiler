@@ -4,10 +4,7 @@ import com.runekrauss.compiler.exception.*;
 import com.runekrauss.parser.EBaseVisitor;
 import com.runekrauss.parser.EParser.*;
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -78,6 +75,9 @@ public class EVisitor extends EBaseVisitor<String> {
   /** Also required when initializing a structure */
   private String lookupLoadCommand;
 
+  /** Holds the current id of a struct */
+  private int lookupStructId;
+
   /**
    * Creates a visitor for semantic analysis and subsequent code generation where all defined
    * functions are already known.
@@ -103,7 +103,7 @@ public class EVisitor extends EBaseVisitor<String> {
       staticVarsNamesTypes = declaredStaticVars;
       staticVars = new StringBuilder();
       this.namespace = namespace;
-      typeNamespace = "Struct" + namespace;
+      typeNamespace = "struct_" + namespace;
       this.parentDir = parentDir;
       includedModules = new HashMap<>();
       noMain = false;
@@ -117,6 +117,7 @@ public class EVisitor extends EBaseVisitor<String> {
       loopCounter = 0;
       lookupStoreCommand = "";
       lookupLoadCommand = "";
+      lookupStructId = 0;
     }
   }
 
@@ -233,7 +234,7 @@ public class EVisitor extends EBaseVisitor<String> {
    */
   @Override
   public String visitPrint(PrintContext ctx) {
-    String argumentInstructions = visit(ctx.arg);
+    final String argumentInstructions = visit(ctx.arg);
     // Get type to output
     final TypeInformation typeInfo = dataTypeStack.pop();
     // Get the associated JVM type
@@ -258,7 +259,7 @@ public class EVisitor extends EBaseVisitor<String> {
    */
   @Override
   public String visitPrintLine(PrintLineContext ctx) {
-    String argumentInstructions = visit(ctx.arg);
+    final String argumentInstructions = visit(ctx.arg);
     final TypeInformation type = dataTypeStack.pop();
     String jvmType = type.getJvmType();
     if (type.getDataType() == DataType.OBJREF) {
@@ -311,9 +312,9 @@ public class EVisitor extends EBaseVisitor<String> {
       // When you are in the main method
       // Get type information by variable name
       final TypeInformation typeInfo = staticVarsNamesTypes.get(varId);
-      lookupStoreCommand = "putstatic " + namespace + "/n" + typeInfo.getId();
-      lookupLoadCommand = "getstatic " + namespace + "/n" + typeInfo.getId();
-      storeCommand = "putstatic " + namespace + "/n";
+      lookupStoreCommand = "putstatic " + namespace + "/v" + typeInfo.getId();
+      lookupLoadCommand = "getstatic " + namespace + "/v" + typeInfo.getId();
+      storeCommand = "putstatic " + namespace + "/v";
       // Descriptor for field access
       String descriptor;
       if (dataType == DataType.OBJREF) {
@@ -324,7 +325,7 @@ public class EVisitor extends EBaseVisitor<String> {
         vars.put(varId, new TypeInformation(vars.size(), dataType));
       }
       staticVars
-          .append(".field public static n")
+          .append(".field public static v")
           .append(getVariableIndexByVariableIdToken(varIdToken))
           .append(' ')
           .append(descriptor)
@@ -422,8 +423,8 @@ public class EVisitor extends EBaseVisitor<String> {
           throw new WrongDataTypeException(varIdToken);
         }
         final int typeInfoId = typeInfo.getId();
-        lookupStoreCommand = "putstatic " + namespace + "/n" + typeInfoId;
-        lookupLoadCommand = "getstatic " + namespace + "/n" + typeInfoId;
+        lookupStoreCommand = "putstatic " + namespace + "/v" + typeInfoId;
+        lookupLoadCommand = "getstatic " + namespace + "/v" + typeInfoId;
         targetTypeId = Integer.toString(typeInfoId);
         final DataType dataType = typeInfo.getDataType();
         final String jvmType = dataType.getJvmType();
@@ -433,7 +434,7 @@ public class EVisitor extends EBaseVisitor<String> {
                 instructions
                     + "putstatic "
                     + namespace
-                    + "/n"
+                    + "/v"
                     + targetTypeId
                     + ' '
                     + jvmType
@@ -448,7 +449,7 @@ public class EVisitor extends EBaseVisitor<String> {
                       + '\n'
                       + "putstatic "
                       + namespace
-                      + "/n"
+                      + "/v"
                       + getVariableIndexByVariableIdToken(varIdToken)
                       + ' '
                       + jvmType;
@@ -458,7 +459,7 @@ public class EVisitor extends EBaseVisitor<String> {
               result =
                   "getstatic "
                       + namespace
-                      + "/n"
+                      + "/v"
                       + targetTypeId
                       + ' '
                       + jvmType
@@ -477,7 +478,7 @@ public class EVisitor extends EBaseVisitor<String> {
                 instructions
                     + "putstatic "
                     + namespace
-                    + "/n"
+                    + "/v"
                     + targetTypeId
                     + ' '
                     + jvmType
@@ -491,7 +492,7 @@ public class EVisitor extends EBaseVisitor<String> {
                       + '\n'
                       + "putstatic "
                       + namespace
-                      + "/n"
+                      + "/v"
                       + getVariableIndexByVariableIdToken(varIdToken)
                       + ' '
                       + jvmType;
@@ -500,7 +501,7 @@ public class EVisitor extends EBaseVisitor<String> {
               result =
                   "getstatic "
                       + namespace
-                      + "/n"
+                      + "/v"
                       + targetTypeId
                       + ' '
                       + jvmType
@@ -519,7 +520,7 @@ public class EVisitor extends EBaseVisitor<String> {
                 instructions
                     + "putstatic "
                     + namespace
-                    + "/n"
+                    + "/v"
                     + targetTypeId
                     + ' '
                     + jvmType
@@ -533,7 +534,7 @@ public class EVisitor extends EBaseVisitor<String> {
                       + '\n'
                       + "putstatic "
                       + namespace
-                      + "/n"
+                      + "/v"
                       + getVariableIndexByVariableIdToken(varIdToken)
                       + ' '
                       + jvmType;
@@ -542,7 +543,7 @@ public class EVisitor extends EBaseVisitor<String> {
               result =
                   "getstatic "
                       + namespace
-                      + "/n"
+                      + "/v"
                       + targetTypeId
                       + ' '
                       + jvmType
@@ -562,7 +563,7 @@ public class EVisitor extends EBaseVisitor<String> {
                 instructions
                     + "putstatic "
                     + namespace
-                    + "/n"
+                    + "/v"
                     + targetTypeId
                     + ' '
                     + jvmType
@@ -632,6 +633,125 @@ public class EVisitor extends EBaseVisitor<String> {
         }
         return result;
       }
+    }
+  }
+
+  /**
+   * This accesses attributes of structures or assigns values.
+   *
+   * @param ctx Rule for the assignment regarding structs
+   * @return Instructions for an assignment regarding structs
+   */
+  @Override
+  public String visitStructVariableAssignment(StructVariableAssignmentContext ctx) {
+    final int objectId;
+    final TypeInformation typeInfoObject;
+    final String varId = ctx.varId.getText();
+    final int typeInfoObjectId;
+    final String structVarId = ctx.structVarId.getText();
+    String loadCommand;
+    final int structVarIndex;
+    final TypeInformation typeInfoStructVar;
+    String jvmType;
+    final String expression = visit(ctx.expr) + '\n';
+    if (ctx.index == null) {
+      // Primitive type or struct
+      if (isGlobalScope) {
+        final TypeInformation typeInfo = staticVarsNamesTypes.get(varId);
+        if (typeInfo == null) {
+          throw new UndeclaredVariableException(ctx.varId);
+        }
+        objectId = typeInfo.getAddress();
+        typeInfoObject = getTypeInformationByStaticVariableIdToken(ctx.varId);
+        lookupLoadCommand = "getstatic " + namespace + "/v" + typeInfoObject.getId();
+        lookupStoreCommand = "putstatic " + namespace + "/v" + typeInfoObject.getId();
+        loadCommand = lookupLoadCommand;
+        loadCommand += " L" + typeNamespace + objectId + ';';
+      } else {
+        // Inside a function
+        objectId = vars.get(varId).getAddress();
+        typeInfoObject = getTypeInformationByVariableIdToken(ctx.varId);
+        typeInfoObjectId = typeInfoObject.getId();
+        final DataType dataType =
+            structs
+                .get(varId)
+                .getTypes()
+                .get(structs.get(varId).getAddress(structVarId))
+                .getDataType();
+        switch (dataType) {
+          case INT:
+            lookupLoadCommand = "iload " + typeInfoObjectId;
+            lookupStoreCommand = "istore " + typeInfoObjectId;
+          case FLOAT:
+            lookupLoadCommand = "fload " + typeInfoObjectId;
+            lookupStoreCommand = "fstore " + typeInfoObjectId;
+          default:
+            lookupLoadCommand = "aload " + typeInfoObjectId;
+            lookupStoreCommand = "astore " + typeInfoObjectId;
+        }
+        loadCommand = lookupLoadCommand;
+      }
+      loadCommand += '\n';
+      if ((new ArrayList<>(structs.values())).get(objectId).getAddress(structVarId) == null) {
+        throw new UndeclaredVariableException(ctx.structVarId);
+      }
+      structVarIndex = (new ArrayList<>(structs.values())).get(objectId).getAddress(structVarId);
+      typeInfoStructVar =
+          (new ArrayList<>(structs.values())).get(objectId).getTypes().get(structVarIndex);
+      jvmType = typeInfoStructVar.getJvmType();
+      if (typeInfoStructVar.getDataType() == DataType.OBJREF) {
+        jvmType = 'L' + typeNamespace + jvmType + ';';
+      }
+      // LOL
+      dataTypeStack.pop();
+      return loadCommand
+          + expression
+          + "putfield "
+          + typeNamespace
+          + objectId
+          + "/a"
+          + structVarIndex
+          + ' '
+          + jvmType
+          + '\n';
+    } else {
+      // Array
+      if (isGlobalScope) {
+        objectId = staticVarsNamesTypes.get(varId).getAddress();
+        typeInfoObject = getTypeInformationByStaticVariableIdToken(ctx.varId);
+        lookupLoadCommand = "getstatic " + namespace + "/v" + typeInfoObject.getId();
+        lookupStoreCommand = "putstatic " + namespace + "/v" + typeInfoObject.getId();
+        loadCommand = lookupLoadCommand;
+        loadCommand += " L" + typeNamespace + objectId + ';';
+      } else {
+        // Inside a function
+        objectId = vars.get(varId).getAddress();
+        typeInfoObject = getTypeInformationByVariableIdToken(ctx.varId);
+        typeInfoObjectId = typeInfoObject.getId();
+        lookupLoadCommand = "aload " + typeInfoObjectId;
+        lookupStoreCommand = "astore " + typeInfoObjectId;
+        loadCommand = lookupLoadCommand;
+      }
+      loadCommand += '\n';
+      structVarIndex = (new ArrayList<>(structs.values())).get(objectId).getAddress(structVarId);
+      typeInfoStructVar =
+          (new ArrayList<>(structs.values())).get(objectId).getTypes().get(structVarIndex);
+      jvmType = typeInfoStructVar.getJvmType();
+      if (typeInfoStructVar.getDataType() == DataType.OBJREF) {
+        jvmType = 'L' + typeNamespace + jvmType + ';';
+      }
+      dataTypeStack.pop();
+      // LOL
+      return loadCommand
+          + expression
+          + "putfield "
+          + typeNamespace
+          + objectId
+          + "/a"
+          + structVarIndex
+          + ' '
+          + jvmType
+          + '\n';
     }
   }
 
@@ -743,9 +863,9 @@ public class EVisitor extends EBaseVisitor<String> {
 
   /**
    * Is called if a loop like <code>while</code> exists. The loop was implemented with the command
-   * <code>ifeq</code>. For example, the structure is "ldc 0 putstatic e_test_main/n0 I beginLoop1:
-   * getstatic e_test_main/n0 I ldc 3 if_icmplt onCmpTrue1 ldc 0 goto endCmp1 onCmpTrue1: ldc 1
-   * endCmp1: ifeq endLoop1 getstatic e_test_main/n0 ldc 1 iadd pustatic e_test_main/n0 ... goto
+   * <code>ifeq</code>. For example, the structure is "ldc 0 putstatic e_test_main/a0 I beginLoop1:
+   * getstatic e_test_main/a0 I ldc 3 if_icmplt onCmpTrue1 ldc 0 goto endCmp1 onCmpTrue1: ldc 1
+   * endCmp1: ifeq endLoop1 getstatic e_test_main/a0 ldc 1 iadd pustatic e_test_main/a0 ... goto
    * beginLoop1 endLoop1: ...".
    *
    * @see EVisitor#visitBranch(BranchContext)
@@ -754,7 +874,7 @@ public class EVisitor extends EBaseVisitor<String> {
    */
   @Override
   public String visitLoop(LoopContext ctx) {
-    String conditionInstructions = visit(ctx.cond);
+    final String conditionInstructions = visit(ctx.cond);
     dataTypeStack.pop();
     String body = visit(ctx.body);
     if (body == null) {
@@ -818,23 +938,189 @@ public class EVisitor extends EBaseVisitor<String> {
     return instructions;
   }
 
-  /*
+  /**
+   * When a standard routine is called, this visitor becomes active. Among others, the following
+   * standard functions are available:
    *
+   * <ul>
+   *   <li>f2i, i2f: Refers to primitive types with the opcodes 0x8B (139) and 0x86 (134)
+   *   <li>toString, ...: Refers to objects like strings.
+   * </ul>
    *
-   * @Override public String visitInlineAssembly(InlineAssemblyContext ctx) { return ""; }
+   * For example, <code>i2f</code> pops an int off the operand stack, casts it into a
+   * single-precision float, and pushes the float back onto the stack. If a system function is not
+   * found, an exception is thrown. For <code>append</code> the command <code>invokespecial</code>
+   * with the opcode 0xB7 (183) is used to create an object of the StringBuffer.
    *
-   * @Override public String visitInvokeAssembly(InvokeAssemblyContext ctx) { return ""; }
-   *
-   * @Override public String visitInitObject(InitObjectContext ctx) { return ""; }
-   *
-   * @Override public String visitPushToStack(PushToStackContext ctx) { return ""; }
-   *
-   * @Override public String visitSetTopOfStack(SetTopOfStackContext ctx) { return ""; }
-   *
-   * @Override public String visitIncludedFunctionCall(IncludedFunctionCallContext ctx) { return ""; }
-   *
-   * @Override public String visitBuiltinFunctionCall(BuiltinFunctionCallContext ctx) { return ""; }
+   * @param ctx Rule for the built-in function call
+   * @return Instructions regarding the built-in function call
    */
+  @Override
+  public String visitBuiltinFunctionCall(BuiltinFunctionCallContext ctx) {
+    final int paramNumber = ctx.currentParams.exprs.size();
+    final List<String> argumentInstructionsContainer = new ArrayList<>();
+    final StringBuilder argumentInstructions = new StringBuilder();
+    for (int i = 0; i < ctx.currentParams.exprs.size(); ++i) {
+      argumentInstructionsContainer.add(visit(ctx.currentParams.expression(i)) + '\n');
+      argumentInstructions.append(argumentInstructionsContainer.get(i));
+    }
+    final String builtinFuncId = ctx.funcId.getText();
+    String commands;
+    final DataType dataType = dataTypeStack.peek().getDataType();
+    DataType targetDataType;
+    switch (builtinFuncId) {
+      case "toInt":
+        if (dataType == DataType.FLOAT) {
+          commands = "f2i";
+        } else if (dataType == DataType.STRING) {
+          commands = "invokestatic java/lang/Integer.parseInt(Ljava/lang/String;)I";
+        } else {
+          throw new WrongDataTypeException(ctx.funcId);
+        }
+        targetDataType = DataType.INT;
+        break;
+      case "toFloat":
+        if (dataType == DataType.INT) {
+          commands = "i2f";
+        } else if (dataType == DataType.STRING) {
+          commands = "invokestatic java/lang/Float.parseFloat(Ljava/lang/String;)F";
+        } else {
+          throw new WrongDataTypeException(ctx.funcId);
+        }
+        targetDataType = DataType.FLOAT;
+        break;
+      case "toString":
+        if (dataType == DataType.INT) {
+          commands = "invokestatic java/lang/Integer.toString(I)Ljava/lang/String;";
+        } else if (dataType == DataType.FLOAT) {
+          commands = "invokestatic java/lang/Float.toString(F)Ljava/lang/String;";
+        } else {
+          throw new WrongDataTypeException(ctx.funcId);
+        }
+        targetDataType = DataType.STRING;
+        break;
+      case "append":
+        commands =
+            "new java/lang/StringBuffer\n"
+                + "dup\n"
+                + "invokespecial java/lang/StringBuffer/<init>()V\n"
+                + argumentInstructionsContainer.get(0)
+                + '\n'
+                + "invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;\n"
+                + argumentInstructionsContainer.get(1)
+                + '\n'
+                + "invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;\n"
+                + "invokevirtual java/lang/StringBuffer/toString()Ljava/lang/String;";
+        targetDataType = DataType.STRING;
+        argumentInstructions.setLength(0);
+        break;
+      case "length":
+        commands = "arraylength";
+        targetDataType = DataType.INT;
+        break;
+      default:
+        throw new UnknownBuiltinFunctionException(ctx.funcId);
+    }
+    for (int i = 0; i < paramNumber; ++i) {
+      dataTypeStack.pop();
+    }
+    dataTypeStack.push(new TypeInformation(targetDataType));
+    return argumentInstructions + commands;
+  }
+
+  /**
+   * Called when an assembly block is introduced by "asm".
+   *
+   * @param ctx Rule for an assembly block
+   * @return Instructions regarding assembly
+   */
+  @Override
+  public String visitInlineAssembly(InlineAssemblyContext ctx) {
+    return ctx.str.getText().replaceAll("\"", "");
+  }
+
+  /**
+   * Called when an assembly block is executed.
+   *
+   * @param ctx Rule for an executed assembly block
+   * @return Instructions regarding executed assembly
+   */
+  @Override
+  public String visitInvokeAssembly(InvokeAssemblyContext ctx) {
+    final StringBuilder jvmTypes = new StringBuilder();
+    for (int i = 0; i < ctx.args.size(); ++i) {
+      jvmTypes.append(visit(ctx.args.get(i)));
+      dataTypeStack.pop();
+    }
+    final DataType dataType = DataType.getType(ctx.returnType.getText().replaceAll("\"", ""));
+    dataTypeStack.push(new TypeInformation(dataType));
+    String returnType = dataType.getJvmType();
+    if (dataType == DataType.OBJREF) {
+      returnType = ctx.returnType.getText().replaceAll("\"", "");
+    }
+    return "invoke"
+        + ctx.mod.getText().replaceAll("\"", "")
+        + " "
+        + ctx.id.getText().replaceAll("\"", "")
+        + '('
+        + jvmTypes.toString()
+        + ')'
+        + returnType
+        + '\n';
+  }
+
+  /**
+   * Initializes an object using <code>invokespecial</code> and <code>dup</code>, for example <code>
+   * invokespecial java/lang/StringBuffer/<init>()V</code> The opcode is 0x59 (89).
+   *
+   * @param ctx Rule for creating a new object
+   * @return Instructions regarding creating a new object
+   */
+  @Override
+  public String visitInitObject(InitObjectContext ctx) {
+    dataTypeStack.push(new TypeInformation(DataType.OBJREF));
+    return "new "
+        + ctx.type.getText().replaceAll("\"", "")
+        + "\ndup\n"
+        + "invokespecial "
+        + ctx.type.getText().replaceAll("\"", "")
+        + "/<init>()V\n";
+  }
+
+  /**
+   * This can be used to push something onto the stack within assembly blocks.
+   *
+   * @param ctx Rule to push something onto the stack
+   * @return Code for childs
+   */
+  @Override
+  public String visitPushToStack(PushToStackContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * This can be used to visit the top element in the stack.
+   *
+   * @param ctx Rule for visiting the top element in the stack
+   * @return Empty (not important)
+   */
+  @Override
+  public String visitSetTopOfStack(SetTopOfStackContext ctx) {
+    final DataType dataType = DataType.getType(ctx.type.getText().replaceAll("\"", ""));
+    dataTypeStack.push(new TypeInformation(dataType));
+    return "";
+  }
+
+  /**
+   * Cleans the parameters during inline assembly.
+   *
+   * @param ctx Rule for cleaning the assembly parameters
+   * @return Cleaned parameters
+   */
+  @Override
+  public String visitJvmType(JvmTypeContext ctx) {
+    return ctx.getText().replaceAll("\"", "");
+  }
 
   /**
    * Called when a function is defined. The return value is placed on the stack and returned using a
@@ -922,19 +1208,154 @@ public class EVisitor extends EBaseVisitor<String> {
     return instructions.toString();
   }
 
+  /**
+   * Called when declaring a custom type using the keyword "struct". Furthermore, attributes are
+   * assigned to the structure via ".field". Internally, a structure is translated into a class and
+   * stored in a separate file. Among other things, the index in a loop is used as a suffix for the
+   * variable name.
+   *
+   * @param ctx Rule for the struct declaration
+   * @return Instructions for a struct declaration
+   */
   @Override
   public String visitStructDeclaration(StructDeclarationContext ctx) {
-    return "";
+    final StringBuilder vars = new StringBuilder();
+    // Get struct
+    final CustomType struct = structs.get(ctx.structId.getText());
+    // Get type infos of the relevant struct
+    final List<TypeInformation> typeInfos = struct.getTypes();
+    // Create attributes with ".field"
+    for (int i = 0; i < typeInfos.size(); ++i) {
+      final DataType dataType = typeInfos.get(i).getDataType();
+      if (dataType != DataType.OBJREF) {
+        vars.append(".field public a")
+            .append(i)
+            .append(' ')
+            .append(dataType.getJvmType())
+            .append("\n");
+      } else {
+        vars.append(".field public a")
+            .append(i)
+            .append(" L")
+            .append(typeNamespace)
+            .append(dataType.getJvmType())
+            .append(";\n");
+      }
+    }
+    return ".class "
+        + typeNamespace
+        + struct.getId()
+        + "\n.super java/lang/Object\n\n"
+        + vars.toString()
+        + ".method public <init>()V\n"
+        + "aload_0\n"
+        + "invokespecial java/lang/Object/<init>()V\n"
+        + "return\n"
+        + ".end method\n";
   }
 
+  /**
+   * When a structure is initialized, this visitor is called. A distinction is made between an array
+   * and a structure. For example, "invokespecial" must be called for an object in order to create
+   * it.
+   *
+   * @param ctx Rule for the struct initialization
+   * @return Instructions for a struct initialization
+   */
   @Override
-  public String visitStructInitialization(StructInitializationContext ctx) {
-    return "";
+  public String visitStructArrayInitialization(StructArrayInitializationContext ctx) {
+    if (ctx.size == null) {
+      // Struct
+      final int structId = structs.get(ctx.object.getText()).getId();
+      lookupStructId = structId;
+      final StringBuilder instructions =
+          new StringBuilder("new ")
+              .append(typeNamespace)
+              .append(structId)
+              .append("\ndup\ninvokespecial ")
+              .append(typeNamespace)
+              .append(structId)
+              .append("/<init>()V\n")
+              .append(lookupStoreCommand);
+      if (isGlobalScope) {
+        instructions.append(" L").append(typeNamespace).append(structId).append(';');
+      }
+      instructions.append('\n').append(visit(ctx.args)).append(lookupLoadCommand);
+      if (isGlobalScope) {
+        instructions.append(" L").append(typeNamespace).append(lookupStructId).append(';');
+      }
+      instructions.append('\n');
+      dataTypeStack.push(new TypeInformation(DataType.OBJREF, structId));
+      return instructions.toString();
+    } else {
+      // Array
+      final String elementInstructions = visit(ctx.size);
+      final String arrayCommand;
+      final String type;
+      dataTypeStack.pop();
+      final DataType dataType = DataType.getType(ctx.type.getText());
+      final DataType arrayType;
+      switch (dataType) {
+        case INT:
+          arrayType = DataType.IARRAY;
+          arrayCommand = "newarray";
+          type = DataType.INT.getType();
+          break;
+        case FLOAT:
+          arrayType = DataType.FARRAY;
+          arrayCommand = "newarray";
+          type = DataType.FLOAT.getType();
+          break;
+        case STRING:
+          arrayType = DataType.SARRAY;
+          arrayCommand = "anewarray";
+          type = "java/lang/String";
+          break;
+        default:
+          throw new WrongDataTypeException(ctx.start);
+      }
+      dataTypeStack.push(new TypeInformation(arrayType));
+      return elementInstructions + '\n' + arrayCommand + ' ' + type + '\n';
+    }
   }
 
+  /**
+   * When a structure is instantiated, the current attributes must be transferred to formal
+   * attributes. In this context, the command <code>putfield</code> with the opcode 0xB5 (181) sets
+   * the value of the field identified by a field specification in a reference to an object to the
+   * single or double word value on the operand stack.
+   *
+   * @param ctx Rule for the struct initialization
+   * @return Instructions for a struct initialization
+   */
   @Override
   public String visitAssignments(AssignmentsContext ctx) {
-    return "";
+    final StringBuilder instructions = new StringBuilder();
+    for (int i = 0; i < ctx.asgmts.size(); ++i) {
+      final String expression = visit(ctx.asgmts.get(i)) + '\n';
+      instructions.append(lookupLoadCommand);
+      if (isGlobalScope) {
+        instructions.append(" L").append(typeNamespace).append(lookupStructId).append(';');
+      }
+      instructions.append('\n').append(expression);
+      final TypeInformation typeInfo =
+          (new ArrayList<>(structs.values())).get(lookupStructId).getTypes().get(i);
+      String jvmType = typeInfo.getJvmType();
+      if (typeInfo.getDataType() == DataType.OBJREF) {
+        jvmType = 'L' + typeNamespace + jvmType + ';';
+      }
+      // LOL
+      instructions
+          .append("putfield ")
+          .append(typeNamespace)
+          .append(lookupStructId)
+          .append("/a")
+          .append(i)
+          .append(' ')
+          .append(jvmType)
+          .append("\n");
+    }
+    return instructions.toString();
   }
 
   /**
@@ -1343,75 +1764,213 @@ public class EVisitor extends EBaseVisitor<String> {
     return instructions;
   }
 
-  /*
-   * @Override public String visitArrayExpression(ArrayExpressionContext ctx) { return ""; }
-   *
-   * @Override public String visitStructExpression(StructExpressionContext ctx) { return ""; }
-   *
-   * @Override public String visitStructArrayExpression(StructArrayExpressionContext ctx) { return ""; }
-   */
-
   /**
-   * Does the opposite of {@link #visitAssignment}. This visitor is always called when a variable is
-   * used. A distinction is also made between the global and local scope. If a global scope exists,
-   * the system tries to get the value from the reference and push it to the stack. Otherwise, a
-   * command like <code>iload</code> is used to load the value of the variable (also pushed onto the
-   * stack).
+   * Is called when an attribute of a structure is accessed.
    *
-   * @param ctx Variable rule
-   * @return Instruction with regard to loading a value from the table at a position onto the stack
+   * @param ctx Struct rule
+   * @return Instructions regarding a struct access
    */
   @Override
-  public String visitVariableExpression(VariableExpressionContext ctx) {
-    final TypeInformation typeInfo;
+  public String visitStructExpression(StructExpressionContext ctx) {
+    final String structId = ctx.structId.getText();
+    final TypeInformation typeInfoVar = staticVarsNamesTypes.get(structId);
+    if (typeInfoVar == null) {
+      throw new UndeclaredStructException(ctx.structId);
+    }
+    final int typeInfoId = typeInfoVar.getId();
+    final int structAddress = staticVarsNamesTypes.get(structId).getAddress();
+    final int index =
+        (new ArrayList<>(structs.values())).get(structAddress).getAddress(ctx.varId.getText());
+    final TypeInformation typeInfo =
+        (new ArrayList<>(structs.values())).get(structAddress).getTypes().get(index);
+    String jvmType = typeInfo.getJvmType();
+    if (typeInfo.getDataType() == DataType.OBJREF) {
+      jvmType = 'L' + typeNamespace + jvmType + ';';
+    }
+    dataTypeStack.push(
+        (new ArrayList<>(structs.values())).get(structAddress).getTypes().get(index));
     if (isGlobalScope) {
-      // Refers to the main content
-      typeInfo = getTypeInformationByStaticVariableIdToken(ctx.varId);
-      dataTypeStack.push(typeInfo);
-      if (typeInfo.getDataType() == DataType.OBJREF || typeInfo.getDataType() == null) {
-        return "getstatic "
-            + namespace
-            + "/n"
-            + typeInfo.getId()
-            + ' '
-            + 'L'
-            + typeNamespace
-            + typeInfo.getJvmType()
-            + ";\n";
-      }
+      // LOL
       return "getstatic "
           + namespace
-          + "/n"
-          + typeInfo.getId()
+          + "/v"
+          + typeInfoId
+          + " L"
+          + typeNamespace
+          + structAddress
+          + ";\ngetfield "
+          + typeNamespace
+          + structAddress
+          + "/a"
+          + index
+          + " "
+          + jvmType
+          + '\n';
+    } else {
+      // LOL
+      return "aload "
+          + typeInfoId
+          + '\n'
+          + "getfield "
+          + typeNamespace
+          + vars.get(structId).getAddress()
+          + "/a"
+          + index
           + ' '
-          + typeInfo.getDataType().getJvmType();
+          + jvmType
+          + '\n';
+    }
+  }
+
+  /**
+   * Is called when accessing a slot in an array.
+   *
+   * @param ctx Array rule
+   * @return Instructions regarding an array access
+   */
+  @Override
+  public String visitArrayExpression(ArrayExpressionContext ctx) {
+    final TypeInformation typeInfo;
+    final int index;
+    final String loadCommand;
+    final DataType dataType;
+    if (isGlobalScope) {
+      typeInfo = getTypeInformationByStaticVariableIdToken(ctx.varId);
     } else {
       typeInfo = getTypeInformationByVariableIdToken(ctx.varId);
-      TypeInformation newTypeInfo;
-      if (typeInfo.getDataType() == DataType.OBJREF) {
-        newTypeInfo = new TypeInformation(typeInfo.getDataType(), typeInfo.getAddress());
-      } else {
-        newTypeInfo = new TypeInformation(typeInfo.getDataType());
-      }
-      dataTypeStack.push(newTypeInfo);
-      String loadCommand = "";
-      DataType type = typeInfo.getDataType();
-      if (typeInfo.isArray() || type == DataType.STRING) {
-        loadCommand = "aload";
-      } else {
-        switch (type) {
-          case INT:
-            loadCommand = "iload";
-            break;
-          case FLOAT:
-            loadCommand = "fload";
-            break;
-          default:
-            break;
-        }
-      }
-      return loadCommand + ' ' + getVariableIndexByVariableIdToken(ctx.varId);
     }
+    index = typeInfo.getId();
+    switch (typeInfo.getDataType()) {
+      case IARRAY:
+        loadCommand = "iaload";
+        dataType = DataType.INT;
+        break;
+      case FARRAY:
+        loadCommand = "faload";
+        dataType = DataType.FLOAT;
+        break;
+      case SARRAY:
+        loadCommand = "aaload";
+        dataType = DataType.STRING;
+        break;
+      default:
+        throw new WrongDataTypeException(ctx.varId);
+    }
+    dataTypeStack.push(new TypeInformation((DataType.INT)));
+    final String instructions;
+    if (isGlobalScope) {
+      instructions =
+          "getstatic "
+              + namespace
+              + "/v"
+              + index
+              + " ["
+              + dataType.getJvmType()
+              + '\n'
+              + visit(ctx.index)
+              + '\n'
+              + loadCommand;
+    } else {
+      instructions = "aload " + index + '\n' + visit(ctx.index) + '\n' + loadCommand;
+    }
+    dataTypeStack.pop();
+    dataTypeStack.pop();
+    dataTypeStack.push(new TypeInformation(dataType));
+    return instructions;
+  }
+
+  /**
+   * Called when accessing a slot in an array where the array is in a structure.
+   *
+   * @param ctx Struct array rule
+   * @return Instructions regarding an array access in a structure.
+   */
+  @Override
+  public String visitStructArrayExpression(StructArrayExpressionContext ctx) {
+    final int typeInfoId;
+    final String structId = ctx.structId.getText();
+    final int objectId;
+    if (isGlobalScope) {
+      typeInfoId = staticVarsNamesTypes.get(structId).getId();
+      objectId = staticVarsNamesTypes.get(structId).getAddress();
+    } else {
+      typeInfoId = vars.get(structId).getId();
+      objectId = vars.get(structId).getAddress();
+    }
+    final CustomType struct = (new ArrayList<>(structs.values())).get(objectId);
+    final int index = struct.getAddress(ctx.varId.getText());
+    final TypeInformation typeInfo = struct.getTypes().get(index);
+    String jvmType = typeInfo.getJvmType();
+    if (typeInfo.getDataType() == DataType.OBJREF) {
+      jvmType = "L" + typeNamespace + typeInfo.getJvmType() + ";";
+    }
+    final StringBuilder instructions = new StringBuilder();
+    if (isGlobalScope) {
+      // LOL
+      instructions
+          .append("getstatic ")
+          .append(namespace)
+          .append("/v")
+          .append(typeInfoId)
+          .append(" L")
+          .append(typeNamespace)
+          .append(objectId)
+          .append(";\n")
+          .append("getfield ")
+          .append(typeNamespace)
+          .append(staticVarsNamesTypes.get(structId).getAddress())
+          .append("/a")
+          .append(index)
+          .append(' ')
+          .append(jvmType)
+          .append('\n');
+      dataTypeStack.push(new TypeInformation(typeInfoId, DataType.OBJREF));
+      instructions.append(visit(ctx.index)).append('\n');
+      final String loadCommand;
+      if (jvmType.equals(DataType.IARRAY.getJvmType())) {
+        loadCommand = "iaload";
+      } else if (jvmType.equals(DataType.FARRAY.getJvmType())) {
+        loadCommand = "faload";
+      } else {
+        loadCommand = "aaload";
+      }
+      instructions.append(loadCommand).append('\n');
+      dataTypeStack.pop();
+      dataTypeStack.pop();
+      final DataType dataType;
+      switch (struct.getTypes().get(index).getDataType()) {
+        case IARRAY:
+          dataType = DataType.INT;
+          break;
+        case FARRAY:
+          dataType = DataType.FLOAT;
+          break;
+        case STRING:
+          dataType = DataType.STRING;
+          break;
+        default:
+          throw new WrongDataTypeException(ctx.varId);
+      }
+      dataTypeStack.push(new TypeInformation((dataType)));
+    } else {
+      // LOL
+      instructions.append("aload ").append(typeInfoId).append('\n');
+      instructions
+          .append("getfield ")
+          .append(typeNamespace)
+          .append(vars.get(structId).getAddress())
+          .append("/a")
+          .append(index)
+          .append(' ')
+          .append(jvmType)
+          .append('\n');
+      dataTypeStack.push(new TypeInformation(DataType.OBJREF));
+      instructions.append(visit(ctx.index));
+      dataTypeStack.pop();
+      dataTypeStack.pop();
+      dataTypeStack.push(struct.getTypes().get(index));
+    }
+    return instructions.toString();
   }
 
   /**
@@ -1467,6 +2026,80 @@ public class EVisitor extends EBaseVisitor<String> {
   public String visitStringExpression(StringExpressionContext ctx) {
     dataTypeStack.push(new TypeInformation(DataType.STRING));
     return "ldc " + ctx.str.getText();
+  }
+
+  /**
+   * Does the opposite of {@link #visitAssignment}. This visitor is always called when a variable is
+   * used. A distinction is also made between the global and local scope. If a global scope exists,
+   * the system tries to get the value from the reference and push it to the stack. Otherwise, a
+   * command like <code>iload</code> is used to load the value of the variable (also pushed onto the
+   * stack).
+   *
+   * @param ctx Variable rule
+   * @return Instruction with regard to loading a value from the table at a position onto the stack
+   */
+  @Override
+  public String visitVariableExpression(VariableExpressionContext ctx) {
+    final TypeInformation typeInfo;
+    if (isGlobalScope) {
+      // Refers to the main content
+      typeInfo = getTypeInformationByStaticVariableIdToken(ctx.varId);
+      dataTypeStack.push(typeInfo);
+      if (typeInfo.getDataType() == DataType.OBJREF || typeInfo.getDataType() == null) {
+        return "getstatic "
+            + namespace
+            + "/v"
+            + typeInfo.getId()
+            + ' '
+            + 'L'
+            + typeNamespace
+            + typeInfo.getJvmType()
+            + ";\n";
+      }
+      return "getstatic "
+          + namespace
+          + "/v"
+          + typeInfo.getId()
+          + ' '
+          + typeInfo.getDataType().getJvmType();
+    } else {
+      typeInfo = getTypeInformationByVariableIdToken(ctx.varId);
+      final TypeInformation newTypeInfo;
+      if (typeInfo.getDataType() == DataType.OBJREF) {
+        newTypeInfo = new TypeInformation(typeInfo.getDataType(), typeInfo.getAddress());
+      } else {
+        newTypeInfo = new TypeInformation(typeInfo.getDataType());
+      }
+      dataTypeStack.push(newTypeInfo);
+      String loadCommand = "";
+      final DataType dataType = typeInfo.getDataType();
+      if (typeInfo.isArray() || dataType == DataType.STRING) {
+        loadCommand = "aload";
+      } else {
+        switch (dataType) {
+          case INT:
+            loadCommand = "iload";
+            break;
+          case FLOAT:
+            loadCommand = "fload";
+            break;
+          default:
+            break;
+        }
+      }
+      return loadCommand + ' ' + getVariableIndexByVariableIdToken(ctx.varId);
+    }
+  }
+
+  /**
+   * Visits the top of the stack (for example at the end of a method).
+   *
+   * @param ctx Rule for visiting the top of the stack
+   * @return Empty (not important)
+   */
+  @Override
+  public String visitTopOfStack(TopOfStackContext ctx) {
+    return "";
   }
 
   /**

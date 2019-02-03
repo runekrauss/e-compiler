@@ -31,18 +31,22 @@ public class FunctionPrototypeList {
       // The function may only exist if the number of parameters and the function name match
       if (functionParameters.length == params.length
           && functionId.equals(prototype.getFunctionId())) {
-        if (functionParameters.length == 0 && params.length == 0)
+        if (functionParameters.length == 0 && params.length == 0) {
           // There are no parameters available => The function signatures are the same
           return true;
+        }
         boolean match = true;
         // Look more closely at the individual data types of the parameters
-        for (int i = 0; i < functionParameters.length; ++i)
+        for (int i = 0; i < functionParameters.length; ++i) {
           if (functionParameters[i].getDataType() != params[i].getDataType()) {
             // Data types do not match => function signatures cannot be the same
             match = false;
             break;
           }
-        if (match) return true;
+        }
+        if (match) {
+          return true;
+        }
       }
     }
     return false;

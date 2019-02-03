@@ -14,16 +14,14 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class CompilerTest {
-  private Path tempDir;
-
   @BeforeClass
   public void createTempDir() throws IOException {
-    tempDir = Files.createTempDirectory("compilerTest");
+    Main.tempDir = Main.createTempDir("compilerTest");
   }
 
   @AfterClass
   public void deleteTempDir() {
-    Main.deleteRecursive(tempDir.toFile());
+    Main.deleteRecursive(Main.tempDir.toFile());
   }
 
   @DataProvider
@@ -99,11 +97,18 @@ public class CompilerTest {
       loadTestCode("comments/line_comment", "5"),
       loadTestCode("comments/multiline_comment", "5"),
       loadTestCode("comments/special_comment", "5"),
-      loadTestCode("loop/while", "4")
+      loadTestCode("loop/while", "4"),
+      {"Casting to integer", "print(toInt(5.3));", "5"},
+      {"Casting to float", "print(toFloat(\"3\"));", "3.0"},
+      {"Casting to string", "String a = toString(5.0); print(a);", "5.0"},
+      {"Append characters", "String a = append(\"a\", \"b\"); print(a);", "ab"},
+      loadTestCode("assembly/inline_asm", "5.5"),
+      {"Access to an array", "int[] a = new int[3]; a[0] = 5; print(a[0]);", "5"}
     };
   }
 
-  private static String[] loadTestCode(String filePath, String expectedResult) throws Exception {
+  private static String[] loadTestCode(final String filePath, final String expectedResult)
+      throws Exception {
     try (InputStream input = CompilerTest.class.getResourceAsStream("/" + filePath + ".e")) {
       if (input == null) {
         throw new IllegalArgumentException("The file " + filePath + ".e does not exist");
@@ -114,9 +119,10 @@ public class CompilerTest {
   }
 
   @Test(dataProvider = "provideCodeExpectedOutput")
-  public void testCodeExecution(String description, String sourceCode, String expectedOutput)
+  public void testCodeExecution(
+      final String description, final String sourceCode, final String expectedOutput)
       throws Exception {
-    String currentOutput = compileAndRun(sourceCode);
+    final String currentOutput = compileAndRun(sourceCode);
     Assert.assertEquals(currentOutput, expectedOutput);
   }
 
@@ -193,15 +199,15 @@ public class CompilerTest {
     compileAndRun("print(math.square(5): int);");
   }
 
-  private String compileAndRun(String sourceCode) throws Exception {
-    sourceCode = Main.compile(CharStreams.fromString(sourceCode));
+  private String compileAndRun(final String sourceCode) throws Exception {
+    final String compiledCode = Main.compile(CharStreams.fromString(sourceCode));
     // System.out.println(sourceCode);
-    ClassFile classFile = new ClassFile();
-    classFile.readJasmin(new StringReader(sourceCode), "", false);
-    Path outputPath = tempDir.resolve(classFile.getClassName() + ".class");
+    final ClassFile classFile = new ClassFile();
+    classFile.readJasmin(new StringReader(compiledCode), "", false);
+    final Path outputPath = Main.tempDir.resolve(classFile.getClassName() + ".class");
     try (OutputStream output = Files.newOutputStream(outputPath)) {
       classFile.write(output);
     }
-    return Main.runClass(tempDir, classFile.getClassName());
+    return Main.runClass(Main.tempDir, classFile.getClassName());
   }
 }

@@ -1,6 +1,7 @@
 package com.runekrauss.compiler;
 
 import com.runekrauss.compiler.exception.AlreadyDeclaredStructException;
+import com.runekrauss.compiler.exception.AlreadyDeclaredVariableException;
 import com.runekrauss.compiler.exception.UndeclaredStructException;
 import com.runekrauss.parser.EBaseVisitor;
 import com.runekrauss.parser.EParser.StructDeclarationContext;
@@ -87,7 +88,12 @@ public class CustomTypeVisitor {
             newType = new TypeInformation(type);
           }
           varTypes.add(newType);
-          varIds.put(varType, i);
+          final String varId = ctx.decls.get(i).varId.getText();
+          if (!varIds.containsKey(varId)) {
+            varIds.put(varId, i);
+          } else {
+            throw new AlreadyDeclaredVariableException(ctx.decls.get(i).varId);
+          }
         }
         structs.put(ctx.structId.getText(), new CustomType(typeId++, varTypes, varIds));
         return null;

@@ -30,7 +30,7 @@ noMain                      : '#define' name='noMain'
 
 // -------------------------------------------------------------------------------------------------
 // This is a helper for the program because of functions and structs must not be in the main method
-// during code generation. Therefore statements and functions are separated.
+// during code generation. Therefore statements, structs and functions are separated.
 
 command                     : statement #StatementCommand
                             | functionDefinition #FunctionDefinitionCommand
@@ -66,7 +66,7 @@ printLine                   : 'println' OPAREN arg=expression CPAREN
                             ;
 
 // -------------------------------------------------------------------------------------------------
-// Allowed declaration of variables (including an immediate initialization)
+// Allows a declaration of variables (including an immediate initialization)
 
 variableDeclaration         : type=dataType varId=IDENTIFIER (ASSIGN expr=expression)?
                             ;
@@ -83,8 +83,8 @@ assignment                  : varId=IDENTIFIER ASSIGN expr=expression
 // -------------------------------------------------------------------------------------------------
 // This can be used to assign values to structures.
 
-structVariableAssignment    : structId=IDENTIFIER DOT varId=IDENTIFIER ASSIGN expr=expression
-                            | structId=IDENTIFIER DOT varId=IDENTIFIER OBRACKET index=expression
+structVariableAssignment    : varId=IDENTIFIER DOT structVarId=IDENTIFIER ASSIGN expr=expression
+                            | varId=IDENTIFIER DOT structVarId=IDENTIFIER OBRACKET index=expression
                               CBRACKET ASSIGN expr=expression
                             ;
 
@@ -113,11 +113,17 @@ loop                        : 'while' OPAREN cond=expression CPAREN body=block
 // written directly. However, objects can also be initialized directly.
 
 assembly                    : 'asm' OBRACE str=STRING CBRACE #InlineAssembly
-                            | 'invoke' mod=STRING id=STRING OPAREN args+=STRING* CPAREN
-                              #InvokeAssembly
-                            | 'new' type=STRING #InitObject
-                            | 'pushToStack' expression #PushToStack
-                            | 'setTopOfStack' type=STRING #SetTopOfStack
+                            | 'invoke' mod=STRING id=STRING OPAREN args+=jvmType* CPAREN
+                              returnType=STRING SCOLON #InvokeAssembly
+                            | 'new' type=STRING SCOLON #InitObject
+                            | 'pushToStack' expression SCOLON #PushToStack
+                            | 'setTopOfStack' type=STRING SCOLON #SetTopOfStack
+                            ;
+
+// -------------------------------------------------------------------------------------------------
+// The supported types of the JVM
+
+jvmType                     : STRING
                             ;
 
 // -------------------------------------------------------------------------------------------------
@@ -130,11 +136,12 @@ includedFunctionCall        : inclDir=IDENTIFIER DOT funcId=IDENTIFIER OPAREN ar
 // -------------------------------------------------------------------------------------------------
 // This can be used to call built-in functions such as castings (without any imports).
 
-builtinFunctionCall         : funcId=BUILTINFUNCTION OPAREN args=currentParameters CPAREN
+builtinFunctionCall         : funcId=BUILTINFUNCTION OPAREN currentParams=currentParameters CPAREN
                             ;
 
 // -------------------------------------------------------------------------------------------------
-// Definition of a function with parameters and a body with (several) statements
+// Definition of a function with parameters and a body with (several) statements (a return value
+// is optional)
 
 functionDefinition          : type=dataType funcId=IDENTIFIER OPAREN formalParams=formalParameters
                               CPAREN OBRACE
@@ -151,7 +158,7 @@ structDeclaration           : 'struct' structId=IDENTIFIER OBRACE (decls+=variab
 // -------------------------------------------------------------------------------------------------
 // Initializes an object.
 
-structInitialization        : 'new' object=dataType OPAREN args=assignments CPAREN
+structArrayInitialization   : 'new' object=dataType OPAREN args=assignments CPAREN
                             | 'new' type=primitive OBRACKET size=expression CBRACKET
                             ;
 
@@ -176,19 +183,20 @@ expression                  : '!' expression #NegationExpression
                             | lExpr=expression '&&' rExpr=expression #ConjunctionExpression
                             | lExpr=expression '||' rExpr=expression #DisjunctionExpression
                             | expression '^' expression #ContravalenceExpression
-                            | includedFunctionCall #IncludedFunctionExpression
-                            | builtinFunctionCall #BuiltinFunctionExpression
-                            | structInitialization #StructInitializationExpression
-                            | varId=IDENTIFIER OPAREN index=expression CPAREN #ArrayExpression
                             | structId=IDENTIFIER DOT varId=IDENTIFIER #StructExpression
-                            | structId=IDENTIFIER DOT varId=IDENTIFIER OPAREN index=expression
-                              CPAREN #StructArrayExpression
-                            | functionCall #FunctionExpression
-                            | varId=IDENTIFIER #VariableExpression
+                            | varId=IDENTIFIER OBRACKET index=expression CBRACKET #ArrayExpression
+                            | structId=IDENTIFIER DOT varId=IDENTIFIER OBRACKET index=expression
+                              CBRACKET #StructArrayExpression
+                            | structArrayInitialization #StructArrayInitializationExpression
                             | bool=BOOL #BoolExpression
                             | number=INTEGER #IntegerExpression
                             | number=FLOAT #FloatingPointExpression
                             | str=STRING #StringExpression
+                            | varId=IDENTIFIER #VariableExpression
+                            | builtinFunctionCall #BuiltinFunctionExpression
+                            | functionCall #FunctionExpression
+                            | includedFunctionCall #IncludedFunctionExpression
+                            | 'topOfStack' #TopOfStack
                             ;
 
 // -------------------------------------------------------------------------------------------------
@@ -220,67 +228,64 @@ formalParameters            : decls+=variableDeclaration (COMMA decls+=variableD
 
 // Represents the different data types (including lists and objects)
 
-dataType                : primitive(OCBRACKET)?
-                        | IDENTIFIER(OCBRACKET)?
-                        ;
+dataType                    : primitive(OCBRACKET)?
+                            | IDENTIFIER(OCBRACKET)?
+                            ;
 
 // -------------------------------------------------------------------------------------------------
 // The supported (primitive) types
 
-primitive               : 'bool'
-                        | 'int'
-                        | 'float'
-                        | 'String'
-                        | 'void'
-                        ;
+primitive                   : 'bool'
+                            | 'int'
+                            | 'float'
+                            | 'String'
+                            | 'void'
+                            ;
 
 // -------------------------------------------------------------------------------------------------
 // LEXER RULES
 
+// Here are the built-in functions of the language E where an access is possible even without
+// imports.
+
+BUILTINFUNCTION             : 'toInt'
+                            | 'toFloat'
+                            | 'toString'
+                            | 'append'
+                            | 'length'
+                            ;
+
+// -------------------------------------------------------------------------------------------------
 // Represents the two truth values of logic (true, false).
 
-BOOL                    : 'true'
-                        | 'false'
-                        ;
+BOOL                        : 'true'
+                            | 'false'
+                            ;
 
 // -------------------------------------------------------------------------------------------------
 // Refers to integers
 
-INTEGER                 : (DIGIT)+
-                        ;
+INTEGER                     : (DIGIT)+
+                            ;
 
 // -------------------------------------------------------------------------------------------------
 // Refers to floating point numbers
 
-FLOAT                   : INTEGER DOT INTEGER
-                        | DOT INTEGER
-                        ;
+FLOAT                       : INTEGER DOT INTEGER
+                            | DOT INTEGER
+                            ;
 
 // -------------------------------------------------------------------------------------------------
 // Any number of characters, but as little as possible that the rule is still fulfilled
 
-STRING                  : QMARK .*? QMARK
-                        ;
+STRING                      : QMARK .*? QMARK
+                            ;
 
 // -------------------------------------------------------------------------------------------------
 // Identifiers
 
-IDENTIFIER              : LETTER(LETTER | DIGIT)*
-                        ;
-
-
-// -------------------------------------------------------------------------------------------------
-// Here are the built-in functions of the language E, where an access is possible even without
-// imports.
-
-BUILTINFUNCTION         : 'toInt'
-                        | 'toLong'
-                        | 'toFloat'
-                        | 'toDouble'
-                        | 'toString'
-                        | 'append'
-                        | 'length'
-                        ;
+IDENTIFIER                  : LETTER(LETTER | DIGIT)*
+                            ;
 
 // -------------------------------------------------------------------------------------------------
 // (Multi)line comments (but as little as possible that the rule is still fulfilled)

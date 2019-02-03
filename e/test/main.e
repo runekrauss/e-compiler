@@ -1,8 +1,7 @@
-use(e.std.math)
-
-int i = 0;
-while (i < 3) {
-    i = i + 1;
+struct Point {
+  int x;
+  int y;
 }
-println(i);
-print(math.square(3): int);
+
+Point p = new Point(1, 2);
+p.x = 5;

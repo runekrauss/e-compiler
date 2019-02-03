@@ -145,6 +145,12 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSetTopOfStack(EParser.SetTopOfStackContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link EParser#jvmType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitJvmType(EParser.JvmTypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link EParser#includedFunctionCall}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -169,24 +175,17 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStructDeclaration(EParser.StructDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link EParser#structInitialization}.
+	 * Visit a parse tree produced by {@link EParser#structArrayInitialization}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStructInitialization(EParser.StructInitializationContext ctx);
+	T visitStructArrayInitialization(EParser.StructArrayInitializationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link EParser#assignments}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssignments(EParser.AssignmentsContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code StructInitializationExpression}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStructInitializationExpression(EParser.StructInitializationExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code RelationalExpression}
 	 * labeled alternative in {@link EParser#expression}.
@@ -293,6 +292,13 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStringExpression(EParser.StringExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code TopOfStack}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTopOfStack(EParser.TopOfStackContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code DivisionMultiplicationModuloExpression}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
@@ -306,6 +312,13 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArrayExpression(EParser.ArrayExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StructArrayInitializationExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructArrayInitializationExpression(EParser.StructArrayInitializationExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code NegationExpression}
 	 * labeled alternative in {@link EParser#expression}.

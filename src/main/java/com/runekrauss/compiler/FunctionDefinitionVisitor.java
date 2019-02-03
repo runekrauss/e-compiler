@@ -38,9 +38,6 @@ public class FunctionDefinitionVisitor {
       public Void visitFunctionDefinition(FunctionDefinitionContext ctx) {
         // Get return type
         final DataType returnType = DataType.getType(ctx.type.getText());
-        /*
-         * if (returnType == DataType.OBJREF) { throw new WrongDataTypeException(ctx.start); }
-         */
         // Get function identifier
         final String functionId = ctx.funcId.getText();
         final int paramNumber = ctx.formalParams.decls.size();
@@ -94,6 +91,30 @@ public class FunctionDefinitionVisitor {
         new TypeInformation(DataType.VOID),
         "println",
         new TypeInformation[] {new TypeInformation(DataType.STRING)});
+    definedFunctions.add(
+        new TypeInformation(DataType.INT),
+        "toInt",
+        new TypeInformation[] {new TypeInformation(DataType.STRING)});
+    definedFunctions.add(
+        new TypeInformation(DataType.INT),
+        "toInt",
+        new TypeInformation[] {new TypeInformation(DataType.FLOAT)});
+    definedFunctions.add(
+        new TypeInformation(DataType.FLOAT),
+        "toFloat",
+        new TypeInformation[] {new TypeInformation(DataType.INT)});
+    definedFunctions.add(
+        new TypeInformation(DataType.FLOAT),
+        "toFloat",
+        new TypeInformation[] {new TypeInformation(DataType.STRING)});
+    definedFunctions.add(
+        new TypeInformation(DataType.STRING),
+        "toString",
+        new TypeInformation[] {new TypeInformation(DataType.INT)});
+    definedFunctions.add(
+        new TypeInformation(DataType.STRING),
+        "toString",
+        new TypeInformation[] {new TypeInformation(DataType.FLOAT)});
     definedFunctions.add(
         new TypeInformation(DataType.STRING),
         "append",

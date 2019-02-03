@@ -22,23 +22,20 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * @author Rune Krauss
  */
 public class Main {
-  /** Temporary directory for the compiled files */
-  private static Path tempDir;
-
   /** Parent directory (path to file for legacy) */
   private static File parentDir;
-
-  /** The current file to compile */
-  private static File currentFile;
 
   /** The namespace of the program you want to compile currently */
   private static String namespace;
 
+  /** Temporary directory for the compiled files */
+  public static Path tempDir;
+
   /** Holds the programs (including path) to compile. */
-  public static List<String> programs;
+  public static Queue<String> programs;
 
   /** Holds the compiled programs (including path). */
-  public static List<String> compiledPrograms;
+  public static Queue<String> compiledPrograms;
 
   /**
    * Fetches the source code and compiles it.
@@ -50,21 +47,21 @@ public class Main {
     // Path to the main program
     final String fileName = "e/test/main";
     // Create a temporary directory for programs compiled later
-    createTempDir(fileName);
+    tempDir = createTempDir(fileName);
     parentDir = tempDir.toFile();
-    programs = new ArrayList<>();
+    programs = new LinkedList<>();
     // Add the program you want to compile
     programs.add(fileName);
-    compiledPrograms = new ArrayList<>();
+    compiledPrograms = new LinkedList<>();
     // Process the programs
     while (!programs.isEmpty()) {
-      final String program = programs.get(0);
-      programs.remove(0);
+      final String program = programs.poll();
       compiledPrograms.add(program);
       // Set the namespace for later references
       namespace = program.replace('/', '_');
-      currentFile = new File(parentDir.getPath(), namespace + ".e");
-      CharStream srcCode = CharStreams.fromFileName(program + ".e");
+      // The current file to compile
+      final File currentFile = new File(parentDir.getPath(), namespace + ".e");
+      final CharStream srcCode = CharStreams.fromFileName(program + ".e");
       if (Debug.ON) {
         System.out.println(tempDir + " # Location of the " + "folder");
         System.out.println(program + " # Location of the source code " + "to compile");
@@ -88,7 +85,7 @@ public class Main {
                         .substring(0, currentFile.getAbsolutePath().length() - 2)
                     + ".class");
         classFile.write(Files.newOutputStream(outputPath));
-        ClassFile[] extraFiles = new ClassFile[compiledCode.length - 1];
+        final ClassFile[] extraFiles = new ClassFile[compiledCode.length - 1];
         // Create class files for the declared structs
         for (int i = 0; i < compiledCode.length - 1; ++i) {
           final ClassFile file = new ClassFile();
@@ -216,17 +213,14 @@ public class Main {
    * @param fileNamePath Path to the name of the program
    * @throws IOException If the temporary folder cannot be created
    */
-  public static void createTempDir(final String fileNamePath) throws IOException {
+  public static Path createTempDir(final String fileNamePath) throws IOException {
     // "a/b/c" to "c"
-    tempDir =
-        Files.createTempDirectory(fileNamePath.split("/")[fileNamePath.split("/").length - 1]);
-    tempDir.toFile().deleteOnExit();
+    return Files.createTempDirectory(fileNamePath.split("/")[fileNamePath.split("/").length - 1]);
   }
 
   /** Deletes all class files and the related folder. */
-  public static void deleteTempDir() {
+  private static void deleteTempDir() {
     deleteRecursive(tempDir.toFile());
-    tempDir.toFile().delete();
   }
 
   /**
@@ -236,7 +230,7 @@ public class Main {
    */
   public static void deleteRecursive(final File file) {
     if (file.isDirectory()) {
-      for (final File child : file.listFiles()) {
+      for (final File child : Objects.requireNonNull(file.listFiles())) {
         deleteRecursive(child);
       }
     }
@@ -254,10 +248,17 @@ public class Main {
    * @throws Exception If the file could not be processed correctly
    */
   public static String runClass(final Path dir, final String className) throws Exception {
-    Process process =
+    final Process process =
         Runtime.getRuntime().exec(new String[] {"java", "-cp", dir.toString(), className});
     try (InputStream input = process.getInputStream()) {
-      return new Scanner(input).useDelimiter("\\A").next();
+      Scanner scanner = new Scanner(input);
+      if (scanner.useDelimiter("\\A").hasNext()) {
+        String result = scanner.useDelimiter("\\A").next();
+        scanner.close();
+        return result;
+      }
+      scanner.close();
+      return null;
     }
   }
 }
