@@ -86,8 +86,8 @@ public class CompilerTest {
       {"Logical disjunction to true 2", "print(0 || 1);", "1"},
       {"Logical disjunction to true 3", "print(1 || 0);", "1"},
       {"Logical disjunction to false", "print(0 || 0);", "0"},
-      loadTestCode("operators/lazy_eval_and", "0"),
-      loadTestCode("operators/lazy_eval_or", "1"),
+      loadTestCode("operators/lazy_eval_and", "0" + System.lineSeparator() + "0"),
+      loadTestCode("operators/lazy_eval_or", "1" + System.lineSeparator() + "1"),
       {"Logical contravalence to true", "print(0 ^ 1);", "1"},
       {"Logical contravalence to true 2", "print(1 ^ 0);", "1"},
       {"Logical contravalence to false", "print(0 ^ 0);", "0"},
@@ -103,7 +103,8 @@ public class CompilerTest {
       {"Casting to string", "String a = toString(5.0); print(a);", "5.0"},
       {"Append characters", "String a = append(\"a\", \"b\"); print(a);", "ab"},
       loadTestCode("assembly/inline_asm", "5.5"),
-      {"Access to an array", "int[] a = new int[3]; a[0] = 5; print(a[0]);", "5"}
+      {"Access to an array", "int[] a = new int[3]; a[0] = 5; print(a[0]);", "5"},
+      {"Print array length", "int[] a = new int[3]; print(length(a));", "3"}
     };
   }
 

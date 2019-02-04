@@ -702,7 +702,6 @@ public class EVisitor extends EBaseVisitor<String> {
       if (typeInfoStructVar.getDataType() == DataType.OBJREF) {
         jvmType = 'L' + typeNamespace + jvmType + ';';
       }
-      // LOL
       dataTypeStack.pop();
       return loadCommand
           + expression
@@ -741,7 +740,6 @@ public class EVisitor extends EBaseVisitor<String> {
         jvmType = 'L' + typeNamespace + jvmType + ';';
       }
       dataTypeStack.pop();
-      // LOL
       return loadCommand
           + expression
           + "putfield "
@@ -1266,6 +1264,9 @@ public class EVisitor extends EBaseVisitor<String> {
   public String visitStructArrayInitialization(StructArrayInitializationContext ctx) {
     if (ctx.size == null) {
       // Struct
+      if (structs.get(ctx.object.getText()) == null) {
+        throw new UndeclaredStructException(ctx.object.start);
+      }
       final int structId = structs.get(ctx.object.getText()).getId();
       lookupStructId = structId;
       final StringBuilder instructions =
@@ -1344,7 +1345,6 @@ public class EVisitor extends EBaseVisitor<String> {
       if (typeInfo.getDataType() == DataType.OBJREF) {
         jvmType = 'L' + typeNamespace + jvmType + ';';
       }
-      // LOL
       instructions
           .append("putfield ")
           .append(typeNamespace)
@@ -1790,7 +1790,6 @@ public class EVisitor extends EBaseVisitor<String> {
     dataTypeStack.push(
         (new ArrayList<>(structs.values())).get(structAddress).getTypes().get(index));
     if (isGlobalScope) {
-      // LOL
       return "getstatic "
           + namespace
           + "/v"
@@ -1807,7 +1806,6 @@ public class EVisitor extends EBaseVisitor<String> {
           + jvmType
           + '\n';
     } else {
-      // LOL
       return "aload "
           + typeInfoId
           + '\n'
@@ -1906,7 +1904,6 @@ public class EVisitor extends EBaseVisitor<String> {
     }
     final StringBuilder instructions = new StringBuilder();
     if (isGlobalScope) {
-      // LOL
       instructions
           .append("getstatic ")
           .append(namespace)
@@ -1953,7 +1950,6 @@ public class EVisitor extends EBaseVisitor<String> {
       }
       dataTypeStack.push(new TypeInformation((dataType)));
     } else {
-      // LOL
       instructions.append("aload ").append(typeInfoId).append('\n');
       instructions
           .append("getfield ")
