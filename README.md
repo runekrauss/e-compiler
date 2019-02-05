@@ -18,7 +18,20 @@ Hash tables are used to enable fast access to identifiers, strings and other con
 + [Maven](http://maven.apache.org) to manage this project
 
 ## Installation
-At first, clone or download this project. Afterwards, go to the terminal and type `mvn install` to create and install the related JAR file. To delete the created folder *target*, the command `mvn clean` must be executed. To execute the unit tests, there is the command `mvn test`. To ensure the code quality, [Google Java Format](https://github.com/google/google-java-format) was still used which formats the code. [Checkstyle](https://maven.apache.org/plugins/maven-checkstyle-plugin/) was also used. It can find class design problems, method design problems. It also has the ability to check code layout and formatting issues. To re-format the code, simply use the command `mvn com.coveo:fmt-maven-plugin:format`. For static code analysis the command `mvn checkstyle:check` must be entered.
+At first, clone or download this project. Since Jasmin does not exist as an official Maven repository, it must be installed as a local repository:
+
+```
+$ cd lib
+$ mvn install:install-file -Dfile=jasmin.jar -DgroupId=net.sourceforge -DartifactId=jasmin -Dversion=2.4.0 -Dpackaging=jar
+```
+
+Afterwards, go to the terminal and type `mvn install` to create and install the related JAR file. The *target* folder now contains two JARs, with the dependencies embedded in one JAR. The following command starts the main routine:
+
+```
+$ java -cp target/e_compiler-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.runekrauss.compiler.Main
+```
+
+To delete the created folder *target*, the command `mvn clean` must be executed. To execute the unit tests, there is the command `mvn test`. To ensure the code quality, [Google Java Format](https://github.com/google/google-java-format) was still used which formats the code. [Checkstyle](https://maven.apache.org/plugins/maven-checkstyle-plugin/) was also used. It can find class design problems, method design problems. It also has the ability to check code layout and formatting issues. To re-format the code, simply use the command `mvn com.coveo:fmt-maven-plugin:format`. For static code analysis the command `mvn checkstyle:check` must be entered.
 
 ## Language components
 Among others the following features are offered:

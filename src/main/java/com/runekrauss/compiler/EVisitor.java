@@ -1373,7 +1373,7 @@ public class EVisitor extends EBaseVisitor<String> {
    * @return Instructions that depend on the negation
    */
   @Override
-  public String visitNegationExpression(NegationExpressionContext ctx) {
+  public String visitUnaryMinusExpression(UnaryMinusExpressionContext ctx) {
     String instructions = visitChildren(ctx);
     final TypeInformation typeInfo = dataTypeStack.pop();
     switch (typeInfo.getDataType()) {

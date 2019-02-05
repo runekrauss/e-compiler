@@ -271,6 +271,13 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionExpression(EParser.FunctionExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code UnaryMinusExpression}
+	 * labeled alternative in {@link EParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnaryMinusExpression(EParser.UnaryMinusExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code ContravalenceExpression}
 	 * labeled alternative in {@link EParser#expression}.
 	 * @param ctx the parse tree
@@ -319,13 +326,6 @@ public interface EVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStructArrayInitializationExpression(EParser.StructArrayInitializationExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code NegationExpression}
-	 * labeled alternative in {@link EParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNegationExpression(EParser.NegationExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ConjunctionExpression}
 	 * labeled alternative in {@link EParser#expression}.

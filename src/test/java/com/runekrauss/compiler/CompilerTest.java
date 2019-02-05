@@ -77,7 +77,7 @@ public class CompilerTest {
       {"Equal to false", "print(1 == 0);", "0"},
       {"Not equal to true", "print(1 != 0);", "1"},
       {"Not equal to false", "print(0 != 0);", "0"},
-      {"Negation", "print(3 * !5);", "-15"},
+      {"Negation", "print(3 * -5);", "-15"},
       {"Logical conjunction to true", "print(true && true);", "1"},
       {"Logical conjunction to false", "print(0 && 1);", "0"},
       {"Logical conjunction to false 2", "print(true && false);", "0"},

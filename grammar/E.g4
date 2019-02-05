@@ -173,7 +173,7 @@ assignments                 : asgmts+=expression (COMMA asgmts+=expression)*
 // Precedence (partial order): neg, (div, mul, rem), (sub, add), comp (same precedences), and, or,
 // ... Labels allow access in the code.
 
-expression                  : '!' expression #NegationExpression
+expression                  : '-' expression #UnaryMinusExpression
                             | expression op=('/' | '*' | '%') expression
                               #DivisionMultiplicationModuloExpression
                             | expression op=('-' | '+') expression #SubtractionAdditionExpression
@@ -265,7 +265,7 @@ BOOL                        : 'true'
 // -------------------------------------------------------------------------------------------------
 // Refers to integers
 
-INTEGER                     : ('-')?(DIGIT)+
+INTEGER                     : (DIGIT)+
                             ;
 
 // -------------------------------------------------------------------------------------------------
